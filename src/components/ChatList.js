@@ -1,13 +1,7 @@
 import React from "react";
 import "../css/ChatList.css";
 
-function ChatList({ onSelectChat }) {
-  const chats = [
-    { id: 1, name: "John Doe", lastMessage: "Hello, how are you?" },
-    { id: 2, name: "Jane Smith", lastMessage: "Let’s discuss the project." },
-    // More chats...
-  ];
-
+function ChatList({ onSelectChat, chats }) {
   return (
     <div className="chatList">
       {chats.map((chat) => (
