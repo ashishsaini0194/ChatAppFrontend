@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import "../css/ChatWindow.css";
 
-function ChatWindow({ chat, sendMessage, senderId }) {
+function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
   const textRef = useRef(null);
   if (!chat) {
     return <div className="chatWindow">Select a chat to start messaging</div>;
@@ -21,6 +21,9 @@ function ChatWindow({ chat, sendMessage, senderId }) {
         <h2>{chat.name}</h2>
       </div>
       <div className="chatWindow__messages">
+        {allMessages.map((each, index) => {
+          return <div key={index}>{each.message}</div>;
+        })}
         {/* Messages will be displayed here */}
       </div>
       <div className="chatWindow__input">

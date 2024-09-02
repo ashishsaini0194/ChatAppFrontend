@@ -9,6 +9,8 @@ import "../../css/App.css";
 function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [allGuestUsers, setAllGuestUsers] = useState([]);
+  const [allMessages, setAllMessages] = useState({});
+  const [newMessages, setNewMessages] = useState({});
   const navigate = useNavigate();
   let socket = undefined;
 
@@ -32,16 +34,41 @@ function Chat() {
       delete data[socket.id];
       setAllGuestUsers(Object.values(data));
     });
-
-    socket.on("singleUserMessageReceived", ({ message, senderId }) => {
-      console.log(message, senderId);
-    });
   }, []);
+  
+  if (document.socket) {
+    document.socket.on(
+      "singleUserMessageReceived",
+      ({ message, receiverId }) => {
+        console.log(allMessages);
+        console.log({ message, receiverId });
+
+        const newObj = { ...allMessages };
+        newObj[receiverId] = [
+          ...(allMessages[receiverId] || []),
+          { message: message, yourId: receiverId },
+        ];
+        setAllMessages(newObj);
+      }
+    );
+  }
 
   const sendMessage = (data) => {
-    console.log(document.socket);
-    document.socket.emit("singleUserMessage", data);
+    document.socket.emit("singleUserMessage", data, ({ status }) => {
+      if (status) {
+        const newObj = { ...allMessages };
+        newObj[data.id] = [
+          ...(allMessages[data.id] || []),
+          { message: data.message, myId: data.senderId, yourId: data.id },
+        ];
+        setAllMessages(newObj);
+      }
+    });
   };
+
+  useEffect(() => {
+    console.log(allMessages);
+  }, [allMessages]);
 
   return (
     <div style={{ height: " 100vh" }}>
@@ -51,7 +78,8 @@ function Chat() {
         <ChatWindow
           sendMessage={sendMessage}
           chat={selectedChat}
-          senderId={socket?.id || ""}
+          senderId={document.socket?.id || ""}
+          allMessages={allMessages[selectedChat?.id]}
         />
       </div>
     </div>
