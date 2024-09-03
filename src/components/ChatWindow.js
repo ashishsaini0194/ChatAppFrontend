@@ -10,9 +10,11 @@ function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
     const message = textRef.current.value;
     if (!message) {
       alert("message can't be empty !");
+      return;
     }
     const data = { message, id: chat.id, senderId };
     sendMessage(data);
+    textRef.current.value = "";
   };
 
   return (
@@ -22,12 +24,29 @@ function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
       </div>
       <div className="chatWindow__messages">
         {allMessages.map((each, index) => {
-          return <div key={index}>{each.message}</div>;
+          if (!each.message) return;
+          return (
+            <div
+              className={`senderAndReceiver ${
+                each.myId ? "sender" : "receiver"
+              }`}
+              key={index}
+            >
+              {each.message}
+            </div>
+          );
         })}
         {/* Messages will be displayed here */}
       </div>
       <div className="chatWindow__input">
-        <input ref={textRef} type="text" placeholder="Type a message..." />
+        <input
+          onKeyUp={(e) => {
+            e.key === "Enter" && send();
+          }}
+          ref={textRef}
+          type="text"
+          placeholder="Type a message..."
+        />
         <button onClick={send}>Send</button>
         <button>📎</button> {/* File attachment icon */}
       </div>
