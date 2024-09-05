@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { pickRandomColour } from "../constants";
 import { styled } from "@stitches/react";
 
-function ChatList({ onSelectChat, chats }) {
+function ChatList({ myDetails, onSelectChat, chats }) {
   const [isGuestUser, setIsGuestUser] = useState(true);
   useEffect(() => {
     // const urlParam = window.location;
@@ -11,17 +11,18 @@ function ChatList({ onSelectChat, chats }) {
   });
   return (
     <ChatListDiv>
-      <ChatListItem>
+      <ChatListItem
+        style={{ backgroundColor: "rgb(0, 120, 212)", color: "white" }}
+      >
         {isGuestUser && (
           <ChatListItemAvatar
-            style={{ backgroundColor: pickRandomColour("A") }}
-            className="chatListItem__avatar"
+            style={{ backgroundColor: pickRandomColour(myDetails?.name[0]) }}
           >
-            {"A"}
+            {myDetails?.name[0]}
           </ChatListItemAvatar>
         )}{" "}
         <ChatListItemDetails>
-          <h4>{"You"}</h4>
+          <h4>{myDetails?.name}</h4>
         </ChatListItemDetails>
       </ChatListItem>
       {chats.map((chat) => (

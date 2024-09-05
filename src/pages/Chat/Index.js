@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
 import { Container } from "@mui/material";
 import { styled } from "@stitches/react";
 
 function Chat() {
+  const [myDetails, setMyDetails] = useState({ name: "" });
   const [selectedChat, setSelectedChat] = useState(null);
   const [allGuestUsers, setAllGuestUsers] = useState([]);
   const [allMessages, setAllMessages] = useState({});
@@ -32,7 +32,12 @@ function Chat() {
       });
 
       socket.on("guests", (data) => {
-        console.log(data);
+        const details = data[socket.id];
+        if (details && details?.name !== myDetails?.name) {
+          console.log(details);
+          setMyDetails(details);
+        }
+
         delete data[socket.id];
         setAllGuestUsers(Object.values(data));
       });
@@ -91,7 +96,11 @@ function Chat() {
         >
           {/* <Sidebar /> */}
           <MainDiv>
-            <ChatList chats={allGuestUsers} onSelectChat={setSelectedChat} />
+            <ChatList
+              myDetails={myDetails}
+              chats={allGuestUsers}
+              onSelectChat={setSelectedChat}
+            />
             <ChatWindow
               sendMessage={sendMessage}
               chat={selectedChat}

@@ -3,9 +3,6 @@ import { styled } from "@stitches/react";
 
 function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
   const textRef = useRef(null);
-  if (!chat) {
-    return <div className="chatWindow">Select a chat to start messaging</div>;
-  }
   const send = () => {
     const message = textRef.current.value;
     if (!message) {
@@ -16,6 +13,14 @@ function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
     sendMessage(data);
     textRef.current.value = "";
   };
+
+  if (!chat) {
+    return (
+      <ChatWindowDiv>
+        <ChatWindowHeader style={{ height: 23 }}></ChatWindowHeader>
+      </ChatWindowDiv>
+    );
+  }
 
   return (
     <ChatWindowDiv>
