@@ -21,21 +21,27 @@ function Chat() {
 
   useEffect(() => {
     checkLogin();
-    if (!socket) {
-      socket = io(process.env.REACT_APP_BACKEND_URL, { timeout: 1000 });
-    }
-    document.socket = socket;
-    socket.on("connect", () => {
-      console.log("socketId ", socket.id);
-    });
+    setTimeout(() => {
+      if (!socket) {
+        socket = io(process.env.REACT_APP_BACKEND_URL, { timeout: 1000 });
+      }
+      document.socket = socket;
+      socket.on("connect", () => {
+        console.log("socketId ", socket.id);
+      });
 
-    socket.on("guests", (data) => {
-      console.log(data);
-      delete data[socket.id];
-      setAllGuestUsers(Object.values(data));
-    });
+      socket.on("guests", (data) => {
+        console.log(data);
+        delete data[socket.id];
+        setAllGuestUsers(Object.values(data));
+      });
+    }, 0);
+
+    return () => {
+      if (socket) socket.disconnect();
+    };
   }, []);
-  
+
   if (document.socket) {
     document.socket.on(
       "singleUserMessageReceived",

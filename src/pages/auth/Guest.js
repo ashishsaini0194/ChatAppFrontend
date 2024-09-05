@@ -1,8 +1,10 @@
 import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export const Guest = () => {
+export const Guest = (props) => {
+  const nagigate = useNavigate();
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
@@ -24,6 +26,7 @@ export const Guest = () => {
         <Button
           sx={{ marginTop: 5, backgroundColor: "white", color: "black" }}
           variant="contained"
+          onClick={() => nagigate("/")}
         >
           Continue as Guest
         </Button>
