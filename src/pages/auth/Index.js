@@ -9,10 +9,28 @@ import {
   getCssText,
 } from "@stitches/react";
 import { Outlet } from "react-router-dom";
+import { Typography, Link } from "@mui/material";
 
 function Auth() {
+  const urlParam = window.location;
+  console.log(urlParam);
   return (
     <MainDiv>
+      {!urlParam.pathname.includes("guest") && (
+        <Typography
+          variant="h7"
+          color="white"
+          align="left"
+          marginTop={2}
+          position={"absolute"}
+          right={17}
+          style={{ cursor: "pointer" }}
+        >
+          <Link color="#ffffff" href="guest">
+            Guest Mode
+          </Link>
+        </Typography>
+      )}
       <Outlet />
     </MainDiv>
   );
