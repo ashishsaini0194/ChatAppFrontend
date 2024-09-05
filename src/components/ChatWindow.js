@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import "../css/ChatWindow.css";
 import { styled } from "@stitches/react";
 
 function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
