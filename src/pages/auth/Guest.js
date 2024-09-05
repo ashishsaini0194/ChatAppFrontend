@@ -31,7 +31,7 @@ export const Guest = (props) => {
           Continue as Guest
         </Button>
 
-        <Typography variant="h7" color="white" align="center" marginTop={2}>
+        <Typography variant="h7" color="white" align="center" marginTop={3}>
           Already have an account?{" "}
           <Link color="#ffffff" href="login">
             Sign in

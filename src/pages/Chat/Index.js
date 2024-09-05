@@ -5,6 +5,7 @@ import Sidebar from "../../components/Sidebar";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
 import "../../css/App.css";
+import { Container } from "@mui/material";
 
 function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -77,17 +78,29 @@ function Chat() {
   }, [allMessages]);
 
   return (
-    <div style={{ height: " 100vh" }}>
-      {/* <Sidebar /> */}
-      <div className="mainDiv">
-        <ChatList chats={allGuestUsers} onSelectChat={setSelectedChat} />
-        <ChatWindow
-          sendMessage={sendMessage}
-          chat={selectedChat}
-          senderId={document.socket?.id || ""}
-          allMessages={allMessages[selectedChat?.id]}
-        />
-      </div>
+    <div
+      style={{
+        backgroundColor: "black",
+      }}
+    >
+      <Container>
+        <div
+          style={{
+            height: " 100vh",
+          }}
+        >
+          {/* <Sidebar /> */}
+          <div className="mainDiv">
+            <ChatList chats={allGuestUsers} onSelectChat={setSelectedChat} />
+            <ChatWindow
+              sendMessage={sendMessage}
+              chat={selectedChat}
+              senderId={document.socket?.id || ""}
+              allMessages={allMessages[selectedChat?.id]}
+            />
+          </div>
+        </div>
+      </Container>
     </div>
   );
 }

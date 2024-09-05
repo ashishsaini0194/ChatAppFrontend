@@ -13,7 +13,6 @@ import { Typography, Link } from "@mui/material";
 
 function Auth() {
   const urlParam = window.location;
-  console.log(urlParam);
   return (
     <MainDiv>
       {!urlParam.pathname.includes("guest") && (
