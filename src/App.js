@@ -7,6 +7,8 @@ import Chat from "./pages/Chat/Index";
 import { Login } from "./pages/auth/Login.js";
 import { Signup } from "./pages/auth/Signup.js";
 import { Guest } from "./pages/auth/Guest.js";
+import { ThemeProvider } from "@emotion/react";
+import { theme } from "./themeConfig.js";
 
 function App() {
   const [accessMode, setAccessMode] = useState("login");
@@ -17,20 +19,22 @@ function App() {
   //   navigate("/login");
   // });
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Chat />} />
-          <Route path="/mode" element={<Auth />}>
-            {/* nested Routing */}
-            <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Signup />} />
-            <Route path="guest" element={<Guest />} />
-            <Route />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Chat />} />
+            <Route path="/mode" element={<Auth />}>
+              {/* nested Routing */}
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+              <Route path="guest" element={<Guest />} />
+              <Route />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 

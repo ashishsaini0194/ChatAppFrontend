@@ -1,4 +1,4 @@
-import { Button, Input, Typography } from "@mui/material";
+import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
 import React from "react";
 
@@ -6,9 +6,9 @@ export const Login = () => {
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
-        <Signup>Sign up</Signup>
+        <LoginText>Sign in</LoginText>
 
-        <Typography variant="h7" color="grey" align="left" marginTop={2}>
+        {/* <Typography variant="h7" color="grey" align="left" marginTop={2}>
           Full Name
         </Typography>
         <Input
@@ -19,7 +19,7 @@ export const Login = () => {
           sx={{
             ...basicStyle,
           }}
-        />
+        /> */}
 
         <Typography variant="h7" color="grey" align="left" marginTop={2}>
           Email
@@ -53,12 +53,17 @@ export const Login = () => {
         >
           Login
         </Button>
+
+        <Typography variant="h7" color="white" align="center" marginTop={2}>
+          Don't have an account?{" "}
+          <Link color="#ffffff" href="signup">
+            Sign up
+          </Link>
+        </Typography>
       </ParentDiv>
     </div>
   );
 };
-
-export default Login;
 
 const ParentDiv = styled("div", {
   display: "flex",
@@ -69,10 +74,9 @@ const ParentDiv = styled("div", {
   border: "1px solid grey",
   padding: 40,
   borderRadius: 10,
-
 });
 
-const Signup = styled("h1", {
+const LoginText = styled("h1", {
   margin: 0,
   fontWeight: 600,
   lineHeight: 1.5,
