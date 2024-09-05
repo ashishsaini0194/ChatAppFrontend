@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../css/ChatList.css";
 import { pickRandomColour } from "../constants";
+import { styled } from "@stitches/react";
 
 function ChatList({ onSelectChat, chats }) {
   const [isGuestUser, setIsGuestUser] = useState(true);
@@ -10,42 +11,86 @@ function ChatList({ onSelectChat, chats }) {
     // setIsGuestUser(ifGuest);
   });
   return (
-    <div className="chatList">
-      <div className="chatListItem">
+    <ChatListDiv>
+      <ChatListItem>
         {isGuestUser && (
-          <div
+          <ChatListItemAvatar
             style={{ backgroundColor: pickRandomColour("A") }}
             className="chatListItem__avatar"
           >
             {"A"}
-          </div>
+          </ChatListItemAvatar>
         )}{" "}
-        <div className="chatListItem__details">
+        <ChatListItemDetails>
           <h4>{"You"}</h4>
-        </div>
-      </div>
+        </ChatListItemDetails>
+      </ChatListItem>
       {chats.map((chat) => (
-        <div
-          key={chat.id}
-          className="chatListItem"
-          onClick={() => onSelectChat(chat)}
-        >
+        <ChatListItem key={chat.id} onClick={() => onSelectChat(chat)}>
           {isGuestUser && (
-            <div
+            <ChatListItemAvatar
               style={{ backgroundColor: pickRandomColour(chat.name[0]) }}
-              className="chatListItem__avatar"
             >
               {chat.name[0]}
-            </div>
+            </ChatListItemAvatar>
           )}
-          <div className="chatListItem__details">
+          <ChatListItemDetails>
             <h4>{chat.name}</h4>
             <p>{chat.lastMessage}</p>
-          </div>
-        </div>
+          </ChatListItemDetails>
+        </ChatListItem>
       ))}
-    </div>
+    </ChatListDiv>
   );
 }
 
 export default ChatList;
+
+const ChatListDiv = styled("div", {
+  width: "30%",
+  backgroundColor: "#ffffff",
+  borderRight: "1px solid #ddd",
+  overflowY: "auto",
+  boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+});
+
+const ChatListItem = styled("div", {
+  display: "flex",
+  alignItems: "center",
+  padding: 7,
+  cursor: "pointer",
+  borderBottom: "1px solid #ddd",
+  transition: "background-color 0.3s, transform 0.3s",
+  "&:hover": {
+    backgroundColor: "#f5f5f5",
+    transform: "scale(1.02)",
+  },
+});
+
+const ChatListItemAvatar = styled("div", {
+  width: 50,
+  height: 50,
+  backgroundColor: "#0078d4",
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "50%",
+  marginRight: 15,
+  fontWeight: "bold",
+  fontSize: 20,
+});
+
+const ChatListItemDetails = styled("div", {
+  flex: 1,
+  h4: {
+    margin: 0,
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  p: {
+    margin: "5px 0 0",
+    color: "#888",
+    fontSize: 14,
+  },
+});

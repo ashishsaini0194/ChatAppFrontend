@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
-import "../../css/App.css";
 import { Container } from "@mui/material";
+import { styled } from "@stitches/react";
 
 function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -90,7 +90,7 @@ function Chat() {
           }}
         >
           {/* <Sidebar /> */}
-          <div className="mainDiv">
+          <MainDiv>
             <ChatList chats={allGuestUsers} onSelectChat={setSelectedChat} />
             <ChatWindow
               sendMessage={sendMessage}
@@ -98,7 +98,7 @@ function Chat() {
               senderId={document.socket?.id || ""}
               allMessages={allMessages[selectedChat?.id]}
             />
-          </div>
+          </MainDiv>
         </div>
       </Container>
     </div>
@@ -106,3 +106,10 @@ function Chat() {
 }
 
 export default Chat;
+
+const MainDiv = styled("div", {
+  display: "flex",
+  flexSirection: "row",
+  width: "100%",
+  height: "100%",
+});
