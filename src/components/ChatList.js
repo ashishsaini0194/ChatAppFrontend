@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../css/ChatList.css";
 import { pickRandomColour } from "../constants";
 import { styled } from "@stitches/react";
 
