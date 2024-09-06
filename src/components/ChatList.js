@@ -11,9 +11,7 @@ function ChatList({ myDetails, onSelectChat, chats }) {
   });
   return (
     <ChatListDiv>
-      <ChatListItem
-        style={{ backgroundColor: "rgb(0, 120, 212)", color: "white" }}
-      >
+      <ChatListItem style={{ backgroundColor: "rgb(4 43 73)", color: "white" }}>
         {isGuestUser && (
           <ChatListItemAvatar
             style={{ backgroundColor: pickRandomColour(myDetails?.name[0]) }}
@@ -48,7 +46,7 @@ export default ChatList;
 
 const ChatListDiv = styled("div", {
   width: "30%",
-  backgroundColor: "#ffffff",
+  backgroundColor: "rgb(4 43 73)",
   borderRight: "1px solid #ddd",
   overflowY: "auto",
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
@@ -59,7 +57,7 @@ const ChatListItem = styled("div", {
   alignItems: "center",
   padding: 7,
   cursor: "pointer",
-  borderBottom: "1px solid #ddd",
+  borderBottom: "1px solid white",
   transition: "background-color 0.3s, transform 0.3s",
   "&:hover": {
     backgroundColor: "#f5f5f5",

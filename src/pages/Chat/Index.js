@@ -3,8 +3,8 @@ import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
-import { Container } from "@mui/material";
-import { styled } from "@stitches/react";
+import { CircularProgress, Container, Backdrop } from "@mui/material";
+import { keyframes, styled } from "@stitches/react";
 
 function Chat() {
   const [myDetails, setMyDetails] = useState({ name: "" });
@@ -12,6 +12,7 @@ function Chat() {
   const [allGuestUsers, setAllGuestUsers] = useState([]);
   const [allMessages, setAllMessages] = useState({});
   const [newMessages, setNewMessages] = useState({});
+  const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
   let socket = undefined;
 
@@ -88,6 +89,13 @@ function Chat() {
         backgroundColor: "black",
       }}
     >
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={allGuestUsers.length < 2}
+      >
+        <WaitingOtherUsers>Waiting for other users...</WaitingOtherUsers>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Container>
         <div
           style={{
@@ -121,4 +129,17 @@ const MainDiv = styled("div", {
   flexSirection: "row",
   width: "100%",
   height: "100%",
+});
+
+const opacityTransition = keyframes({
+  "0%": { opacity: 0.2 },
+  "50%": { opacity: 0.8 },
+  "100%": { opacity: 0.2 },
+});
+
+const WaitingOtherUsers = styled("div", {
+  color: "darkgray",
+  position: "absolute",
+  top: "54%",
+  animation: `${opacityTransition} 4s infinite`,
 });

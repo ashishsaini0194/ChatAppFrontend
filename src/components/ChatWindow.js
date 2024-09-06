@@ -17,7 +17,7 @@ function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
   if (!chat) {
     return (
       <ChatWindowDiv>
-        <ChatWindowHeader style={{ height: 23 }}></ChatWindowHeader>
+        <ChatWindowHeader style={{ height: 24 }}></ChatWindowHeader>
       </ChatWindowDiv>
     );
   }
@@ -63,16 +63,15 @@ const ChatWindowDiv = styled("div", {
   flex: 1,
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "#ffffff",
+  backgroundColor: "rgb(4 43 73)",
   borderLeft: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
 });
 
 const ChatWindowHeader = styled("div", {
   padding: 20,
-  backgroundColor: "#0078d4",
   color: "#ffffff",
-  borderBottom: "1px solid #005bb5",
+  borderBottom: "1px solid white",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",

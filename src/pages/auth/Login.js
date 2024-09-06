@@ -3,6 +3,11 @@ import { styled } from "@stitches/react";
 import React from "react";
 
 export const Login = () => {
+  const login = async () =>
+    await fetch("http://localhost:3000/login", {
+      credentials: "include",
+    });
+
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
@@ -50,6 +55,7 @@ export const Login = () => {
         <Button
           sx={{ marginTop: 10, backgroundColor: "white", color: "black" }}
           variant="contained"
+          onClick={login}
         >
           Login
         </Button>
