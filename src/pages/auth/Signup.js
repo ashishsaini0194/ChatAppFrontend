@@ -1,8 +1,28 @@
 import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
-import React from "react";
+import React, { useRef, useState } from "react";
 
 export const Signup = () => {
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [name, setName] = useState();
+  const signup = async () => {
+    if (!email || !password || !name) {
+      console.log(email, password, name);
+      alert("Inavlid name, email or password");
+      return;
+    }
+    const dataToSend = {
+      email,
+      password,
+      name,
+    };
+    await fetch("http://localhost:3000/signup", {
+      method: "POST",
+      body: JSON.stringify(dataToSend),
+      headers: { "Content-Type": "application/json" },
+    });
+  };
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
@@ -16,6 +36,7 @@ export const Signup = () => {
           color="grey"
           placeholder="Bond 007"
           disableUnderline={true}
+          onChange={(e) => setName(e.target.value)}
           sx={{
             ...basicStyle,
           }}
@@ -25,6 +46,7 @@ export const Signup = () => {
           Email
         </Typography>
         <Input
+          onChange={(e) => setEmail(e.target.value)}
           type="email"
           color="grey"
           placeholder="your@email.com"
@@ -38,6 +60,7 @@ export const Signup = () => {
           Password
         </Typography>
         <Input
+          onChange={(e) => setPassword(e.target.value)}
           type="password"
           autoComplete="off"
           color="white"
@@ -51,8 +74,9 @@ export const Signup = () => {
         <Button
           sx={{ marginTop: 10, backgroundColor: "white", color: "black" }}
           variant="contained"
+          onClick={signup}
         >
-          Login
+          Sign up
         </Button>
 
         <Typography variant="h7" color="white" align="center" marginTop={2}>

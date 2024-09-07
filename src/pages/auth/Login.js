@@ -1,12 +1,26 @@
 import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
-import React from "react";
+import React, { useRef, useState } from "react";
 
 export const Login = () => {
-  const login = async () =>
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const login = async (data) => {
+    if (!email || !password) {
+      alert("Inavlid email or password");
+      return;
+    }
+    const dataToSend = {
+      email,
+      password,
+    };
     await fetch("http://localhost:3000/login", {
       credentials: "include",
+      method: "POST",
+      body: JSON.stringify(dataToSend),
+      headers: { "Content-Type": "application/json" },
     });
+  };
 
   return (
     <div style={{ display: "flex", height: "100%" }}>
@@ -30,6 +44,7 @@ export const Login = () => {
           Email
         </Typography>
         <Input
+          onChange={(e) => setEmail(e.target.value)}
           type="email"
           color="grey"
           placeholder="your@email.com"
@@ -43,6 +58,7 @@ export const Login = () => {
           Password
         </Typography>
         <Input
+          onChange={(e) => setPassword(e.target.value)}
           type="password"
           color="white"
           placeholder="*****"
