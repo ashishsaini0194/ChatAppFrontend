@@ -1,11 +1,16 @@
-import { Button, Input, Link, Typography } from "@mui/material";
+import { Alert, Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
 import React, { useRef, useState } from "react";
+import {
+  ErrorResponseComp,
+  validTypes,
+} from "../../components/ErrorResponseComp";
 
 export const Signup = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [name, setName] = useState();
+  const [responseState, setResponseState] = useState({});
   const signup = async () => {
     if (!email || !password || !name) {
       console.log(email, password, name);
@@ -17,11 +22,24 @@ export const Signup = () => {
       password,
       name,
     };
-    await fetch("http://localhost:3000/signup", {
+    let data = await fetch("http://localhost:3000/signup", {
       method: "POST",
       body: JSON.stringify(dataToSend),
       headers: { "Content-Type": "application/json" },
     });
+
+    const jsonData = await data.json();
+    console.log(data.status);
+    if (data.status > 399)
+      setResponseState({ type: validTypes.error, message: jsonData?.message });
+    else
+      setResponseState({
+        type: validTypes.success,
+        message: jsonData?.message,
+      });
+    setTimeout(() => {
+      setResponseState("");
+    }, 1000);
   };
   return (
     <div style={{ display: "flex", height: "100%" }}>
@@ -86,6 +104,7 @@ export const Signup = () => {
           </Link>
         </Typography>
       </ParentDiv>
+      {responseState && <ErrorResponseComp {...responseState} />}
     </div>
   );
 };

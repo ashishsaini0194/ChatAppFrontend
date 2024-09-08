@@ -1,11 +1,11 @@
 import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
 export const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const login = async (data) => {
+  const login = async () => {
     if (!email || !password) {
       alert("Inavlid email or password");
       return;
