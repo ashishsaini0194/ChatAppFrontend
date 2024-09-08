@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   styled,
   css,
@@ -8,11 +8,21 @@ import {
   createTheme,
   getCssText,
 } from "@stitches/react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Typography, Link } from "@mui/material";
 
 function Auth() {
+  const navigate = useNavigate();
   const urlParam = window.location;
+  useEffect(() => {
+    const getLoginInfo = sessionStorage.getItem("guest");
+    if (getLoginInfo === "true") navigate("/", { replace: true });
+
+    if (urlParam.pathname == "/mode") {
+      console.log("heh");
+      navigate("guest");
+    }
+  }, []);
   return (
     <MainDiv>
       {!urlParam.pathname.includes("guest") && (

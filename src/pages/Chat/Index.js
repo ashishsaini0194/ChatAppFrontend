@@ -18,8 +18,8 @@ function Chat() {
   let socket = undefined;
 
   const checkLogin = () => {
-    const getLoginInfo = localStorage.getItem("auth");
-    if (getLoginInfo) navigate("/login");
+    const getLoginInfo = sessionStorage.getItem("guest");
+    if (getLoginInfo !== "true") navigate("/mode/guest", { replace: true });
   };
 
   useEffect(() => {

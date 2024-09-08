@@ -7,11 +7,12 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@stitches/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const Guest = (props) => {
-  const nagigate = useNavigate();
+  const navigate = useNavigate();
+
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
@@ -33,7 +34,10 @@ export const Guest = (props) => {
         <Button
           sx={{ marginTop: 5, backgroundColor: "white", color: "black" }}
           variant="contained"
-          onClick={() => nagigate("/")}
+          onClick={() => {
+            sessionStorage.setItem("guest", "true");
+            navigate("../../", { replace: true });
+          }}
         >
           Continue as Guest
         </Button>
