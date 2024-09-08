@@ -10,6 +10,7 @@ function Chat() {
   const [myDetails, setMyDetails] = useState({ name: "" });
   const [selectedChat, setSelectedChat] = useState(null);
   const [allGuestUsers, setAllGuestUsers] = useState([]);
+  const [disconnectedGuestUsers, setDisconnectedAllGuestUsers] = useState({});
   const [allMessages, setAllMessages] = useState({});
   const [newMessages, setNewMessages] = useState({});
   const [loader, setLoader] = useState(true);
@@ -41,6 +42,14 @@ function Chat() {
 
         delete data[socket.id];
         setAllGuestUsers(Object.values(data));
+      });
+
+      socket.on("disconnectedGuest", (userId) => {
+        console.log("before", disconnectedGuestUsers);
+        let obj = disconnectedGuestUsers;
+        obj[userId] = userId;
+
+        setDisconnectedAllGuestUsers({ ...obj });
       });
     }, 0);
 
@@ -79,9 +88,7 @@ function Chat() {
     });
   };
 
-  useEffect(() => {
-    console.log(allMessages);
-  }, [allMessages]);
+  console.log({ disconnectedGuestUsers });
 
   return (
     <div
@@ -107,11 +114,15 @@ function Chat() {
             <ChatList
               myDetails={myDetails}
               chats={allGuestUsers}
+              disconnectedGuestUsers={disconnectedGuestUsers}
               onSelectChat={setSelectedChat}
             />
             <ChatWindow
               sendMessage={sendMessage}
               chat={selectedChat}
+              disconnected={
+                disconnectedGuestUsers[selectedChat?.id] ? true : false
+              }
               senderId={document.socket?.id || ""}
               allMessages={allMessages[selectedChat?.id]}
             />

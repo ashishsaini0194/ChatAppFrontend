@@ -1,7 +1,13 @@
 import React, { useRef } from "react";
 import { styled } from "@stitches/react";
 
-function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
+function ChatWindow({
+  chat,
+  sendMessage,
+  disconnected,
+  senderId,
+  allMessages = [],
+}) {
   const textRef = useRef(null);
   const send = () => {
     const message = textRef.current.value;
@@ -41,18 +47,23 @@ function ChatWindow({ chat, sendMessage, senderId, allMessages = [] }) {
         })}
         {/* Messages will be displayed here */}
       </ChatWindowMessages>
-      <ChatWindowInput>
-        <input
-          onKeyUp={(e) => {
-            e.key === "Enter" && send();
-          }}
-          ref={textRef}
-          type="text"
-          placeholder="Type a message..."
-        />
-        <button onClick={send}>Send</button>
-        <button>📎</button> {/* File attachment icon */}
-      </ChatWindowInput>
+      {!disconnected && (
+        <ChatWindowInput>
+          <input
+            disabled={disconnected}
+            onKeyUp={(e) => {
+              e.key === "Enter" && send();
+            }}
+            ref={textRef}
+            type="text"
+            placeholder="Type a message..."
+          />
+          <button disabled={disconnected} onClick={send}>
+            Send
+          </button>
+          <button>📎</button> {/* File attachment icon */}
+        </ChatWindowInput>
+      )}
     </ChatWindowDiv>
   );
 }

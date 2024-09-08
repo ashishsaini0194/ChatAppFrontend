@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { pickRandomColour } from "../constants";
 import { styled } from "@stitches/react";
+import { Typography } from "@mui/material";
 
-function ChatList({ myDetails, onSelectChat, chats }) {
+function ChatList({ myDetails, onSelectChat, disconnectedGuestUsers, chats }) {
   const [isGuestUser, setIsGuestUser] = useState(true);
-  useEffect(() => {
-    // const urlParam = window.location;
-    // const ifGuest = urlParam.pathname.includes("guest");
-    // setIsGuestUser(ifGuest);
-  });
+
   return (
-    <ChatListDiv>
-      <ChatListItem style={{ backgroundColor: "rgb(4 43 73)", color: "white" }}>
+    <ChatListDiv style={{ overflow: "none" }}>
+      <ChatListItem
+        style={{
+          backgroundColor: "rgb(4 43 73)",
+          color: "white",
+          border: "none",
+        }}
+      >
         {isGuestUser && (
           <ChatListItemAvatar
             style={{ backgroundColor: pickRandomColour(myDetails?.name[0]) }}
@@ -23,21 +26,43 @@ function ChatList({ myDetails, onSelectChat, chats }) {
           <h4>{myDetails?.name}</h4>
         </ChatListItemDetails>
       </ChatListItem>
-      {chats.map((chat) => (
-        <ChatListItem key={chat.id} onClick={() => onSelectChat(chat)}>
-          {isGuestUser && (
-            <ChatListItemAvatar
-              style={{ backgroundColor: pickRandomColour(chat.name[0]) }}
-            >
-              {chat.name[0]}
-            </ChatListItemAvatar>
-          )}
-          <ChatListItemDetails>
-            <h4>{chat.name}</h4>
-            <p>{chat.lastMessage}</p>
-          </ChatListItemDetails>
-        </ChatListItem>
-      ))}
+      <Typography
+        sx={{
+          color: "white",
+          backgroundColor: "#ffffff29",
+          fontWeight: 700,
+          textAlign: "start",
+          padding: "10px",
+        }}
+      >
+        Chats
+      </Typography>
+      <ChatListDiv style={{ height: "88%", overflowY: "auto", width: "100%" }}>
+        {chats.map((chat) => (
+          <ChatListItem
+            key={chat.id}
+            onClick={() => onSelectChat(chat)}
+            style={disconnectedGuestUsers[chat.id] ? { opacity: 0.5 } : {}}
+          >
+            {isGuestUser && (
+              <ChatListItemAvatar
+                style={{ backgroundColor: pickRandomColour(chat.name[0]) }}
+              >
+                {chat.name[0]}
+              </ChatListItemAvatar>
+            )}
+            <ChatListItemDetails>
+              <h4>{chat.name}</h4>
+              {disconnectedGuestUsers[chat.id] && (
+                <p style={{ color: "red", fontWeight: 600 }}>
+                  {"User Disconnected !"}
+                </p>
+              )}
+              <p>{chat.lastMessage}</p>
+            </ChatListItemDetails>
+          </ChatListItem>
+        ))}
+      </ChatListDiv>
     </ChatListDiv>
   );
 }
@@ -48,8 +73,8 @@ const ChatListDiv = styled("div", {
   width: "30%",
   backgroundColor: "rgb(4 43 73)",
   borderRight: "1px solid #ddd",
-  overflowY: "auto",
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+  overflowX: "hidden",
 });
 
 const ChatListItem = styled("div", {

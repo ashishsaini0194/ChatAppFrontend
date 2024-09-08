@@ -145,6 +145,6 @@ export const pickRandomColour = (firstChar) => {
   if (!charArr.length) return "black";
   const randomNumber = Math.floor(Math.random(0, charArr.length));
   const key = charArr[randomNumber];
-  console.log(colours[key]);
+  // console.log(colours[key]);
   return `#${colours[key]}`;
 };
