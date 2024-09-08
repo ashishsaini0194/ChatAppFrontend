@@ -86,7 +86,7 @@ const ChatWindowMessages = styled("div", {
   flex: 1,
   padding: 20,
   overflowY: "auto",
-  backgroundColor: "#f5f5f5",
+  backgroundColor: "rgb(4 43 73)",
   alignItems: "flex-start",
   display: "flex",
   flexDirection: "column",
@@ -97,7 +97,7 @@ const ChatWindowInput = styled("div", {
   display: "flex",
   alignItems: "center",
   borderTop: "1px solid #ddd",
-  backgroundColor: "#ffffff",
+  backgroundColor: "rgb(4 43 73)",
   input: {
     flex: 1,
     padding: 10,
@@ -105,20 +105,21 @@ const ChatWindowInput = styled("div", {
     border: "1px solid #ddd",
     marginRight: 10,
     fontSize: 14,
+    outline: "none",
   },
   button: {
     marginLeft: 10,
     border: "none",
-    backgroundColor: "#0078d4",
-    color: "white",
+    backgroundColor: "white",
+    color: "rgb(4 43 73)",
     padding: "10px 15px",
     borderRadius: 20,
     cursor: "pointer",
     fontSize: 14,
     transition: "background-color 0.3s",
-    "&:hover": {
-      backgroundColor: "#005bb5",
-    },
+    // "&:hover": {
+    //   backgroundColor: "#005bb5",
+    // },
   },
 });
 

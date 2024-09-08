@@ -91,7 +91,7 @@ function Chat() {
     >
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={allGuestUsers.length < 2}
+        open={allGuestUsers.length < 1}
       >
         <WaitingOtherUsers>Waiting for other users...</WaitingOtherUsers>
         <CircularProgress color="inherit" />

@@ -5,16 +5,22 @@ import {
   ErrorResponseComp,
   validTypes,
 } from "../../components/ErrorResponseComp";
+import { useNavigate } from "react-router-dom";
 
 export const Signup = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [name, setName] = useState();
   const [responseState, setResponseState] = useState({});
+  const navigation = useNavigate();
   const signup = async () => {
     if (!email || !password || !name) {
       console.log(email, password, name);
-      alert("Inavlid name, email or password");
+
+      setResponseState({
+        type: validTypes.error,
+        message: "Invalid data !",
+      });
       return;
     }
     const dataToSend = {
@@ -29,17 +35,18 @@ export const Signup = () => {
     });
 
     const jsonData = await data.json();
-    console.log(data.status);
     if (data.status > 399)
       setResponseState({ type: validTypes.error, message: jsonData?.message });
-    else
+    else {
       setResponseState({
         type: validTypes.success,
         message: jsonData?.message,
       });
-    setTimeout(() => {
-      setResponseState("");
-    }, 1000);
+      setTimeout(() => {
+        setResponseState("");
+      }, 1000);
+      navigation("/mode/login");
+    }
   };
   return (
     <div style={{ display: "flex", height: "100%" }}>

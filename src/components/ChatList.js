@@ -59,9 +59,11 @@ const ChatListItem = styled("div", {
   cursor: "pointer",
   borderBottom: "1px solid white",
   transition: "background-color 0.3s, transform 0.3s",
+  color: "White",
   "&:hover": {
     backgroundColor: "#f5f5f5",
-    transform: "scale(1.02)",
+    transform: "scale(1.04)",
+    color: "rgb(4 43 73)",
   },
 });
 

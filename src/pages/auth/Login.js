@@ -1,10 +1,17 @@
 import { Button, Input, Link, Typography } from "@mui/material";
 import { styled } from "@stitches/react";
 import React, { useState } from "react";
+import {
+  ErrorResponseComp,
+  validTypes,
+} from "../../components/ErrorResponseComp";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [responseState, setResponseState] = useState({});
+  const navigation = useNavigate();
   const login = async () => {
     if (!email || !password) {
       alert("Inavlid email or password");
@@ -14,31 +21,32 @@ export const Login = () => {
       email,
       password,
     };
-    await fetch("http://localhost:3000/login", {
+    const data = await fetch("http://localhost:3000/login", {
       credentials: "include",
       method: "POST",
       body: JSON.stringify(dataToSend),
       headers: { "Content-Type": "application/json" },
     });
+
+    const jsonData = await data.json();
+    if (data.status > 399)
+      setResponseState({ type: validTypes.error, message: jsonData?.message });
+    else {
+      setResponseState({
+        type: validTypes.success,
+        message: jsonData?.message,
+      });
+      setTimeout(() => {
+        setResponseState("");
+      }, 1000);
+      navigation("/");
+    }
   };
 
   return (
     <div style={{ display: "flex", height: "100%" }}>
       <ParentDiv>
         <LoginText>Sign in</LoginText>
-
-        {/* <Typography variant="h7" color="grey" align="left" marginTop={2}>
-          Full Name
-        </Typography>
-        <Input
-          type="text"
-          color="grey"
-          placeholder="Bond 007"
-          disableUnderline={true}
-          sx={{
-            ...basicStyle,
-          }}
-        /> */}
 
         <Typography variant="h7" color="grey" align="left" marginTop={2}>
           Email
@@ -83,6 +91,7 @@ export const Login = () => {
           </Link>
         </Typography>
       </ParentDiv>
+      {responseState && <ErrorResponseComp {...responseState} />}
     </div>
   );
 };
