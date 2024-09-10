@@ -27,7 +27,7 @@ function Chat() {
   };
 
   useEffect(() => {
-    checkLogin();
+    if (!checkLogin()) return;
     setTimeout(() => {
       if (!socket) {
         socket = io(process.env.REACT_APP_BACKEND_URL, { timeout: 1000 });
