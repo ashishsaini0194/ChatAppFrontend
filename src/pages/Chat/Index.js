@@ -19,7 +19,11 @@ function Chat() {
 
   const checkLogin = () => {
     const getLoginInfo = sessionStorage.getItem("guest");
-    if (getLoginInfo !== "true") navigate("/mode/guest", { replace: true });
+    if (getLoginInfo !== "true") {
+      navigate("/mode/guest", { replace: true });
+      return false;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -89,6 +93,27 @@ function Chat() {
   };
 
   console.log({ disconnectedGuestUsers });
+
+  if (!checkLogin()) {
+    return (
+      <>
+        <div
+          style={{
+            backgroundColor: "black",
+            height: "100vh",
+            width: "100%",
+          }}
+        >
+          <Backdrop
+            sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+            open={allGuestUsers.length < 1}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div

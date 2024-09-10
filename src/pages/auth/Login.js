@@ -29,17 +29,19 @@ export const Login = () => {
     });
 
     const jsonData = await data.json();
-    if (data.status > 399)
+    if (data.status > 399) {
       setResponseState({ type: validTypes.error, message: jsonData?.message });
-    else {
-      setResponseState({
-        type: validTypes.success,
-        message: jsonData?.message,
-      });
-      setTimeout(() => {
+      setInterval(() => {
         setResponseState("");
       }, 1000);
-      navigation("/");
+    } else {
+      // setResponseState({
+      //   type: validTypes.success,
+      //   message: jsonData?.message,
+      // });
+      setTimeout(() => {
+        navigation("/");
+      }, 0);
     }
   };
 
@@ -79,7 +81,7 @@ export const Login = () => {
         <Button
           sx={{ marginTop: 10, backgroundColor: "white", color: "black" }}
           variant="contained"
-          onClick={login}
+          // onClick={login}
         >
           Login
         </Button>
@@ -89,6 +91,16 @@ export const Login = () => {
           <Link color="#ffffff" href="signup">
             Sign up
           </Link>
+        </Typography>
+        <Typography
+          style={{
+            color: "palevioletred",
+            marginTop: "73px",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          Note: Under development
         </Typography>
       </ParentDiv>
       {responseState && <ErrorResponseComp {...responseState} />}

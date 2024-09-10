@@ -35,17 +35,19 @@ export const Signup = () => {
     });
 
     const jsonData = await data.json();
-    if (data.status > 399)
+    if (data.status > 399) {
       setResponseState({ type: validTypes.error, message: jsonData?.message });
-    else {
-      setResponseState({
-        type: validTypes.success,
-        message: jsonData?.message,
-      });
-      setTimeout(() => {
+      setInterval(() => {
         setResponseState("");
       }, 1000);
-      navigation("/mode/login");
+    } else {
+      // setResponseState({
+      //   type: validTypes.success,
+      //   message: jsonData?.message,
+      // });
+      setTimeout(() => {
+        navigation("/mode/login");
+      }, 0);
     }
   };
   return (
@@ -99,7 +101,7 @@ export const Signup = () => {
         <Button
           sx={{ marginTop: 10, backgroundColor: "white", color: "black" }}
           variant="contained"
-          onClick={signup}
+          // onClick={signup}
         >
           Sign up
         </Button>
@@ -109,6 +111,16 @@ export const Signup = () => {
           <Link color="#ffffff" href="login">
             Sign in
           </Link>
+        </Typography>
+        <Typography
+          style={{
+            color: "palevioletred",
+            marginTop: "73px",
+            textTransform: "uppercase",
+            fontWeight: 700,
+          }}
+        >
+          Note: Under development
         </Typography>
       </ParentDiv>
       {responseState && <ErrorResponseComp {...responseState} />}
