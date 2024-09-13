@@ -32,8 +32,10 @@ function Chat() {
       if (!socket) {
         console.log("This line is running");
         socket = io(process.env.REACT_APP_BACKEND_URL, {
-          retries: 5,
-          reconnectionDelay: 2000,
+          reconnection: true, // Enable reconnection
+          reconnectionAttempts: 5, // Number of reconnection attempts
+          reconnectionDelay: 2000, // Delay between reconnections
+          reconnectionDelayMax: 5000, // Maximum delay between reconnections
         });
       }
       document.socket = socket;
