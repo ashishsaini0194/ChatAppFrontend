@@ -30,7 +30,10 @@ function Chat() {
     if (!checkLogin()) return;
     setTimeout(() => {
       if (!socket) {
-        socket = io(process.env.REACT_APP_BACKEND_URL, { timeout: 1000 });
+        socket = io(process.env.REACT_APP_BACKEND_URL, {
+          timeout: 1000,
+          reconnectionAttempts: 5,
+        });
       }
       document.socket = socket;
       socket.on("connect", () => {
