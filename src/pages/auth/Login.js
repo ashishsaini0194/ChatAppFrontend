@@ -21,7 +21,7 @@ export const Login = () => {
       email,
       password,
     };
-    const data = await fetch("http://localhost:3000/login", {
+    const data = await fetch(`${process.env.REACT_APP_BACKEND_URL}/login`, {
       credentials: "include",
       method: "POST",
       body: JSON.stringify(dataToSend),

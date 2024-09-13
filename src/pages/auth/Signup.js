@@ -28,7 +28,7 @@ export const Signup = () => {
       password,
       name,
     };
-    let data = await fetch("http://localhost:3000/signup", {
+    let data = await fetch(`${process.env.REACT_APP_BACKEND_URL}/signup`, {
       method: "POST",
       body: JSON.stringify(dataToSend),
       headers: { "Content-Type": "application/json" },
