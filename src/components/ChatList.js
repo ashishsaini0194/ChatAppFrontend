@@ -3,9 +3,15 @@ import { pickRandomColour } from "../constants";
 import { styled } from "@stitches/react";
 import { Typography } from "@mui/material";
 
-function ChatList({ myDetails, onSelectChat, disconnectedGuestUsers, chats }) {
+function ChatList({
+  myDetails,
+  onSelectChat,
+  disconnectedGuestUsers,
+  chats,
+  newMessages,
+}) {
   const [isGuestUser, setIsGuestUser] = useState(true);
-
+  console.log({ newMessages });
   return (
     <ChatListDiv style={{ overflow: "none" }}>
       <ChatListItem
@@ -53,6 +59,13 @@ function ChatList({ myDetails, onSelectChat, disconnectedGuestUsers, chats }) {
             )}
             <ChatListItemDetails>
               <h4>{chat.name}</h4>
+              {newMessages[chat.id]?.length > 0 && (
+                <p style={{ color: "white", fontWeight: 600 }}>
+                  {newMessages[chat.id]?.length === 1
+                    ? `${newMessages[chat.id]?.length} new message `
+                    : `${newMessages[chat.id]?.length} new messages `}
+                </p>
+              )}
               {disconnectedGuestUsers[chat.id] && (
                 <p style={{ color: "red", fontWeight: 600 }}>
                   {"User Disconnected !"}

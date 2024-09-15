@@ -17,6 +17,28 @@ function Chat() {
   const navigate = useNavigate();
   let socket = undefined;
 
+  const pullNewMessages = () => {
+    if (!selectedChat) return;
+    const messages = newMessages[selectedChat.id];
+    if (!messages) return;
+    let newObj = { ...allMessages };
+    messages.forEach((each) => {
+      newObj[selectedChat.id] = [
+        ...(newObj[selectedChat.id] || []),
+        { ...each },
+      ];
+    });
+    setAllMessages(newObj);
+
+    let obj = { ...newMessages };
+    delete obj[selectedChat.id];
+    setNewMessages(obj);
+  };
+
+  useEffect(() => {
+    pullNewMessages();
+  }, [selectedChat]);
+
   const checkLogin = () => {
     const getLoginInfo = sessionStorage.getItem("guest");
     if (getLoginInfo !== "true") {
@@ -30,7 +52,6 @@ function Chat() {
     if (!checkLogin()) return;
     setTimeout(() => {
       if (!socket) {
-        console.log("This line is running");
         socket = io(process.env.REACT_APP_BACKEND_URL, {
           reconnection: true, // Enable reconnection
           reconnectionAttempts: 5, // Number of reconnection attempts
@@ -39,14 +60,14 @@ function Chat() {
         });
       }
       document.socket = socket;
-      socket.on("connect", () => {
-        console.log("socketId ", socket.id);
-      });
+      // socket.on("connect", () => {
+      //   // console.log("socketId ", socket.id);
+      // });
 
+      document.socket.removeAllListeners("guests");
       socket.on("guests", (data) => {
         const details = data[socket.id];
         if (details && details?.name !== myDetails?.name) {
-          console.log(details);
           setMyDetails(details);
         }
 
@@ -54,8 +75,8 @@ function Chat() {
         setAllGuestUsers(Object.values(data));
       });
 
+      document.socket.removeAllListeners("disconnectedGuest"); //removing old listeners to prevent multiple times output
       socket.on("disconnectedGuest", (userId) => {
-        console.log("before", disconnectedGuestUsers);
         let obj = disconnectedGuestUsers;
         obj[userId] = userId;
 
@@ -69,21 +90,32 @@ function Chat() {
   }, []);
 
   if (document.socket) {
+    document.socket.removeAllListeners("singleUserMessageReceived");
     document.socket.on(
       "singleUserMessageReceived",
       ({ message, receiverId }) => {
-        console.log(allMessages);
-        console.log({ message, receiverId });
+        console.log({ message, receiverId }, selectedChat);
 
-        const newObj = { ...allMessages };
-        newObj[receiverId] = [
-          ...(allMessages[receiverId] || []),
-          { message: message, yourId: receiverId },
-        ];
-        setAllMessages(newObj);
+        if (selectedChat?.id === receiverId) {
+          const newObj = updateMessages(message, receiverId, allMessages);
+          setAllMessages(newObj);
+        } else {
+          const newObj = updateMessages(message, receiverId, newMessages);
+          setNewMessages(newObj);
+          pullNewMessages();
+        }
       }
     );
   }
+
+  const updateMessages = (message, receiverId, source) => {
+    const newObj = { ...source };
+    newObj[receiverId] = [
+      ...(source[receiverId] || []),
+      { message: message, yourId: receiverId },
+    ];
+    return newObj;
+  };
 
   const sendMessage = (data) => {
     document.socket.emit("singleUserMessage", data, ({ status }) => {
@@ -97,8 +129,6 @@ function Chat() {
       }
     });
   };
-
-  console.log({ disconnectedGuestUsers });
 
   if (!checkLogin()) {
     return (
@@ -147,6 +177,7 @@ function Chat() {
               chats={allGuestUsers}
               disconnectedGuestUsers={disconnectedGuestUsers}
               onSelectChat={setSelectedChat}
+              newMessages={newMessages}
             />
             <ChatWindow
               sendMessage={sendMessage}
