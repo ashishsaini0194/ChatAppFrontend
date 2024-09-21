@@ -9,12 +9,13 @@ import { keyframes, styled } from "@stitches/react";
 function Chat() {
   const [myDetails, setMyDetails] = useState({ name: "" });
   const [selectedChat, setSelectedChat] = useState(null);
-  const [allGuestUsers, setAllGuestUsers] = useState([]);
+  const [allGuestUsers, setAllGuestUsers] = useState({});
   const [disconnectedGuestUsers, setDisconnectedAllGuestUsers] = useState({});
   const [allMessages, setAllMessages] = useState({});
   const [newMessages, setNewMessages] = useState({});
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
+  const [documentSocket, setDocumentSocket] = useState(true);
   let socket = undefined;
 
   const pullNewMessages = () => {
@@ -60,28 +61,10 @@ function Chat() {
         });
       }
       document.socket = socket;
+      setDocumentSocket(!documentSocket);
       // socket.on("connect", () => {
       //   // console.log("socketId ", socket.id);
       // });
-
-      document.socket.removeAllListeners("guests");
-      socket.on("guests", (data) => {
-        const details = data[socket.id];
-        if (details && details?.name !== myDetails?.name) {
-          setMyDetails(details);
-        }
-
-        delete data[socket.id];
-        setAllGuestUsers(Object.values(data));
-      });
-
-      document.socket.removeAllListeners("disconnectedGuest"); //removing old listeners to prevent multiple times output
-      socket.on("disconnectedGuest", (userId) => {
-        let obj = disconnectedGuestUsers;
-        obj[userId] = userId;
-
-        setDisconnectedAllGuestUsers({ ...obj });
-      });
     }, 0);
 
     return () => {
@@ -90,6 +73,29 @@ function Chat() {
   }, []);
 
   if (document.socket) {
+    document.socket.removeAllListeners("guests");
+    document.socket.on("guests", (data, callback) => {
+      console.log(data, callback);
+      const details = data[document.socket.id];
+      if (details && details?.name !== myDetails?.name) {
+        setMyDetails(details);
+      }
+
+      delete data[document.socket.id];
+      console.log(allGuestUsers, data);
+      setAllGuestUsers({ ...allGuestUsers, ...data });
+      callback(true);
+    });
+
+    document.socket.removeAllListeners("disconnectedGuest"); //removing old listeners to prevent multiple times output
+    document.socket.on("disconnectedGuest", (userId) => {
+      console.log({ allGuestUsers });
+      let obj = disconnectedGuestUsers;
+      obj[userId] = userId;
+
+      setDisconnectedAllGuestUsers({ ...obj });
+    });
+
     document.socket.removeAllListeners("singleUserMessageReceived");
     document.socket.on(
       "singleUserMessageReceived",
@@ -142,7 +148,7 @@ function Chat() {
         >
           <Backdrop
             sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-            open={allGuestUsers.length < 1}
+            open={Object.keys(allGuestUsers).length < 1}
           >
             <CircularProgress color="inherit" />
           </Backdrop>
@@ -159,7 +165,7 @@ function Chat() {
     >
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={allGuestUsers.length < 1}
+        open={Object.keys(allGuestUsers).length < 1}
       >
         <WaitingOtherUsers>Waiting for other users...</WaitingOtherUsers>
         <CircularProgress color="inherit" />
@@ -174,7 +180,7 @@ function Chat() {
           <MainDiv>
             <ChatList
               myDetails={myDetails}
-              chats={allGuestUsers}
+              chats={Object.values(allGuestUsers)}
               disconnectedGuestUsers={disconnectedGuestUsers}
               onSelectChat={setSelectedChat}
               newMessages={newMessages}
