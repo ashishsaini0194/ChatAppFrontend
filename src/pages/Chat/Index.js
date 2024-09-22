@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
-import { keyframes, styled } from "@stitches/react";
+import { styled, keyframes } from "../../stichesConfig";
 
 function Chat() {
+  const [showSideBar, setShowSideBar] = useState(true);
   const [myDetails, setMyDetails] = useState({ name: "" });
   const [selectedChat, setSelectedChat] = useState(null);
   const [allGuestUsers, setAllGuestUsers] = useState({});
@@ -74,8 +75,8 @@ function Chat() {
 
   if (document.socket) {
     document.socket.removeAllListeners("guests");
-    document.socket.on("guests", (data, callback) => {
-      console.log(data, callback);
+    document.socket.on("guests", (data) => {
+      // console.log(data, callback);
       const details = data[document.socket.id];
       if (details && details?.name !== myDetails?.name) {
         setMyDetails(details);
@@ -84,7 +85,7 @@ function Chat() {
       delete data[document.socket.id];
       console.log(allGuestUsers, data);
       setAllGuestUsers({ ...allGuestUsers, ...data });
-      callback(true);
+      // callback(true);
     });
 
     document.socket.removeAllListeners("disconnectedGuest"); //removing old listeners to prevent multiple times output
@@ -170,21 +171,25 @@ function Chat() {
         <WaitingOtherUsers>Waiting for other users...</WaitingOtherUsers>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Container>
+      <StyledContainer>
         <div
           style={{
-            height: " 100vh",
+            height: "100vh",
           }}
         >
           {/* <Sidebar /> */}
           <MainDiv>
-            <ChatList
-              myDetails={myDetails}
-              chats={Object.values(allGuestUsers)}
-              disconnectedGuestUsers={disconnectedGuestUsers}
-              onSelectChat={setSelectedChat}
-              newMessages={newMessages}
-            />
+            {showSideBar && (
+              <ChatList
+                myDetails={myDetails}
+                chats={Object.values(allGuestUsers)}
+                disconnectedGuestUsers={disconnectedGuestUsers}
+                selectedChat={selectedChat}
+                onSelectChat={setSelectedChat}
+                newMessages={newMessages}
+                setShowSideBar={setShowSideBar}
+              />
+            )}
             <ChatWindow
               sendMessage={sendMessage}
               chat={selectedChat}
@@ -193,10 +198,11 @@ function Chat() {
               }
               senderId={document.socket?.id || ""}
               allMessages={allMessages[selectedChat?.id]}
+              setShowSideBar={setShowSideBar}
             />
           </MainDiv>
         </div>
-      </Container>
+      </StyledContainer>
     </div>
   );
 }
@@ -221,4 +227,10 @@ const WaitingOtherUsers = styled("div", {
   position: "absolute",
   top: "54%",
   animation: `${opacityTransition} 4s infinite`,
+});
+
+const StyledContainer = styled(Container, {
+  "@bp1": {
+    padding: "0px !important",
+  },
 });

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { pickRandomColour } from "../constants";
-import { styled } from "@stitches/react";
 import { Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { fixedWidth, styled } from "../stichesConfig";
 
 function ChatList({
   myDetails,
@@ -9,8 +10,11 @@ function ChatList({
   disconnectedGuestUsers,
   chats,
   newMessages,
+  setShowSideBar,
+  selectedChat,
 }) {
   const [isGuestUser, setIsGuestUser] = useState(true);
+  const deviceWidth = window.innerWidth;
   console.log({ newMessages });
   return (
     <ChatListDiv style={{ overflow: "none" }}>
@@ -31,6 +35,15 @@ function ChatList({
         <ChatListItemDetails>
           <h4>{myDetails?.name}</h4>
         </ChatListItemDetails>
+        {selectedChat && (
+          <CloseIconStyled
+            onClick={() => {
+              setShowSideBar(false);
+            }}
+          >
+            <CloseIcon />
+          </CloseIconStyled>
+        )}
       </ChatListItem>
       <Typography
         sx={{
@@ -47,7 +60,10 @@ function ChatList({
         {chats.map((chat) => (
           <ChatListItem
             key={chat.id}
-            onClick={() => onSelectChat(chat)}
+            onClick={() => {
+              onSelectChat(chat);
+              if (deviceWidth <= fixedWidth) setShowSideBar(false);
+            }}
             style={disconnectedGuestUsers[chat.id] ? { opacity: 0.5 } : {}}
           >
             {isGuestUser && (
@@ -82,12 +98,28 @@ function ChatList({
 
 export default ChatList;
 
+const CloseIconStyled = styled("div", {
+  paddingRight: "11%",
+  "@bp1": {
+    display: "block",
+  },
+  "@bp3": {
+    display: "none",
+  },
+});
+
 const ChatListDiv = styled("div", {
   width: "30%",
   backgroundColor: "rgb(4 43 73)",
   borderRight: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
   overflowX: "hidden",
+  minWidth: "280px",
+  "@bp1": {
+    width: "100%",
+    position: "absolute",
+    height: "100%",
+  },
 });
 
 const ChatListItem = styled("div", {
@@ -98,10 +130,15 @@ const ChatListItem = styled("div", {
   borderBottom: "1px solid white",
   transition: "background-color 0.3s, transform 0.3s",
   color: "White",
-  "&:hover": {
-    backgroundColor: "#f5f5f5",
-    transform: "scale(1.04)",
-    color: "rgb(4 43 73)",
+  "@bp3": {
+    "&:hover": {
+      backgroundColor: "#f5f5f5",
+      transform: "scale(1.04)",
+      color: "rgb(4 43 73)",
+    },
+  },
+  "@bp1": {
+    width: "100%",
   },
 });
 

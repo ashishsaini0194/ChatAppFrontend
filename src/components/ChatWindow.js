@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import { styled } from "@stitches/react";
+import { styled } from "../stichesConfig";
+import MenuIcon from "@mui/icons-material/Menu";
 
 function ChatWindow({
   chat,
@@ -7,6 +8,7 @@ function ChatWindow({
   disconnected,
   senderId,
   allMessages = [],
+  setShowSideBar,
 }) {
   const textRef = useRef(null);
   const send = () => {
@@ -32,6 +34,9 @@ function ChatWindow({
     <ChatWindowDiv>
       <ChatWindowHeader>
         <h2>{chat.name}</h2>
+        <MobileVisibility onClick={() => setShowSideBar(true)}>
+          <MenuIcon />
+        </MobileVisibility>
       </ChatWindowHeader>
       <ChatWindowMessages>
         {allMessages.map((each, index) => {
@@ -61,7 +66,7 @@ function ChatWindow({
           <button disabled={disconnected} onClick={send}>
             Send
           </button>
-          <button>📎</button> {/* File attachment icon */}
+          {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
     </ChatWindowDiv>
@@ -70,6 +75,15 @@ function ChatWindow({
 
 export default ChatWindow;
 
+const MobileVisibility = styled("div", {
+  "@bp1": {
+    display: "block",
+  },
+  "@bp3": {
+    display: "none",
+  },
+});
+
 const ChatWindowDiv = styled("div", {
   flex: 1,
   display: "flex",
@@ -77,6 +91,11 @@ const ChatWindowDiv = styled("div", {
   backgroundColor: "rgb(4 43 73)",
   borderLeft: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
+  "@bp1": {
+    flex: "auto",
+    width: "100%",
+    borderLeft: "none",
+  },
 });
 
 const ChatWindowHeader = styled("div", {
@@ -117,6 +136,12 @@ const ChatWindowInput = styled("div", {
     marginRight: 10,
     fontSize: 14,
     outline: "none",
+    "@bp1": {
+      borderRadius: 4,
+      marginRight: 0,
+      flex: "none",
+      width: "60%",
+    },
   },
   button: {
     marginLeft: 10,
@@ -128,9 +153,15 @@ const ChatWindowInput = styled("div", {
     cursor: "pointer",
     fontSize: 14,
     transition: "background-color 0.3s",
-    // "&:hover": {
-    //   backgroundColor: "#005bb5",
-    // },
+    "@bp1": {
+      marginLeft: 0,
+      borderRadius: 4,
+      fontWeight: 600,
+    },
+  },
+  "@bp1": {
+    padding: "15px 0px",
+    justifyContent: "space-evenly",
   },
 });
 
