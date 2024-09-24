@@ -99,7 +99,7 @@ function ChatList({
 export default ChatList;
 
 const CloseIconStyled = styled("div", {
-  paddingRight: "11%",
+  paddingRight: "8%",
   "@bp1": {
     display: "block",
   },

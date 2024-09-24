@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
-import { styled, keyframes } from "../../stichesConfig";
+import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 
 function Chat() {
   const [showSideBar, setShowSideBar] = useState(true);
@@ -18,6 +18,7 @@ function Chat() {
   const navigate = useNavigate();
   const [documentSocket, setDocumentSocket] = useState(true);
   let socket = undefined;
+  const deviceWidth = window.innerWidth;
 
   const pullNewMessages = () => {
     if (!selectedChat) return;
@@ -179,7 +180,7 @@ function Chat() {
         >
           {/* <Sidebar /> */}
           <MainDiv>
-            {showSideBar && (
+            {(showSideBar || deviceWidth > fixedWidth) && (
               <ChatList
                 myDetails={myDetails}
                 chats={Object.values(allGuestUsers)}
@@ -190,16 +191,19 @@ function Chat() {
                 setShowSideBar={setShowSideBar}
               />
             )}
-            <ChatWindow
-              sendMessage={sendMessage}
-              chat={selectedChat}
-              disconnected={
-                disconnectedGuestUsers[selectedChat?.id] ? true : false
-              }
-              senderId={document.socket?.id || ""}
-              allMessages={allMessages[selectedChat?.id]}
-              setShowSideBar={setShowSideBar}
-            />
+            {(!showSideBar || deviceWidth > fixedWidth) && (
+              <ChatWindow
+                sendMessage={sendMessage}
+                chat={selectedChat}
+                disconnected={
+                  disconnectedGuestUsers[selectedChat?.id] ? true : false
+                }
+                senderId={document.socket?.id || ""}
+                allMessages={allMessages[selectedChat?.id]}
+                setShowSideBar={setShowSideBar}
+                ifNewMessage={Object.keys(newMessages).length > 0}
+              />
+            )}
           </MainDiv>
         </div>
       </StyledContainer>

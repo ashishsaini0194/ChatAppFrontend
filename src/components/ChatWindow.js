@@ -9,6 +9,7 @@ function ChatWindow({
   senderId,
   allMessages = [],
   setShowSideBar,
+  ifNewMessage,
 }) {
   const textRef = useRef(null);
   const send = () => {
@@ -32,18 +33,31 @@ function ChatWindow({
 
   return (
     <ChatWindowDiv>
-      <ChatWindowHeader>
+      <ChatWindowHeader style={{ position: "relative" }}>
         <h2>{chat.name}</h2>
         <MobileVisibility onClick={() => setShowSideBar(true)}>
           <MenuIcon />
         </MobileVisibility>
+        {ifNewMessage && (
+          <MobileVisibility
+            style={{ position: "absolute", right: "5%", bottom: "35%" }}
+          >
+            <RedCircle />
+          </MobileVisibility>
+        )}
       </ChatWindowHeader>
       <ChatWindowMessages>
         {allMessages.map((each, index) => {
           if (!each.message) return;
           return (
             <SenderAndReceiver
-              style={each.myId && { marginLeft: "auto" }}
+              style={
+                each.myId && {
+                  marginLeft: "auto",
+                  backgroundColor: "rgb(233 233 233)",
+                  color: "#0f5783",
+                }
+              }
               key={index}
             >
               {each.message}
@@ -75,6 +89,14 @@ function ChatWindow({
 
 export default ChatWindow;
 
+const RedCircle = styled("span", {
+  width: 8,
+  height: 8,
+  borderRadius: "100%",
+  backgroundColor: "#f15858",
+  display: "block",
+});
+
 const MobileVisibility = styled("div", {
   "@bp1": {
     display: "block",
@@ -105,6 +127,7 @@ const ChatWindowHeader = styled("div", {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
+  // position: "relative",
   h2: {
     margin: 0,
     fontSize: 18,
@@ -140,7 +163,7 @@ const ChatWindowInput = styled("div", {
       borderRadius: 4,
       marginRight: 0,
       flex: "none",
-      width: "60%",
+      width: "67%",
     },
   },
   button: {
@@ -166,7 +189,7 @@ const ChatWindowInput = styled("div", {
 });
 
 const SenderAndReceiver = styled("div", {
-  backgroundColor: "#0f5783",
+  backgroundColor: "rgb(12 53 79)",
   maxWidth: "50%",
   textAlign: "start",
   bordeRadius: 15,
