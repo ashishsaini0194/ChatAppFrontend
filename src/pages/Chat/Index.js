@@ -234,7 +234,7 @@ const WaitingOtherUsers = styled("div", {
 });
 
 const StyledContainer = styled(Container, {
-  "@bp1": {
-    padding: "0px !important",
-  },
+  // "@bp1": {
+  //   padding: "0px !important",
+  // },
 });

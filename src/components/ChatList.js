@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { pickRandomColour } from "../constants";
 import { Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { fixedWidth, styled } from "../stichesConfig";
+import { fixedWidth, styled, theme } from "../stichesConfig";
 
 function ChatList({
   myDetails,
@@ -20,7 +20,7 @@ function ChatList({
     <ChatListDiv style={{ overflow: "none" }}>
       <ChatListItem
         style={{
-          backgroundColor: "rgb(4 43 73)",
+          backgroundColor: theme.colors.darkBlue,
           color: "white",
           border: "none",
         }}
@@ -110,14 +110,14 @@ const CloseIconStyled = styled("div", {
 
 const ChatListDiv = styled("div", {
   width: "30%",
-  backgroundColor: "rgb(4 43 73)",
+  backgroundColor: theme.colors.darkBlue,
   borderRight: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
   overflowX: "hidden",
   minWidth: "280px",
   "@bp1": {
     width: "100%",
-    position: "absolute",
+    // position: "absolute",
     height: "100%",
   },
 });

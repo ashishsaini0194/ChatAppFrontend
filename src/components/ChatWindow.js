@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { styled } from "../stichesConfig";
+import { styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
 
 function ChatWindow({
@@ -110,7 +110,7 @@ const ChatWindowDiv = styled("div", {
   flex: 1,
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "rgb(4 43 73)",
+  backgroundColor: theme.colors.darkBlue,
   borderLeft: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
   "@bp1": {
@@ -139,7 +139,7 @@ const ChatWindowMessages = styled("div", {
   flex: 1,
   padding: 20,
   overflowY: "auto",
-  backgroundColor: "rgb(4 43 73)",
+  backgroundColor: theme.colors.darkBlue,
   alignItems: "flex-start",
   display: "flex",
   flexDirection: "column",
@@ -150,7 +150,7 @@ const ChatWindowInput = styled("div", {
   display: "flex",
   alignItems: "center",
   borderTop: "1px solid #ddd",
-  backgroundColor: "rgb(4 43 73)",
+  backgroundColor: theme.colors.darkBlue,
   input: {
     flex: 1,
     padding: 10,
