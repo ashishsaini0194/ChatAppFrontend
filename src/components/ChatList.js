@@ -17,7 +17,7 @@ function ChatList({
   const deviceWidth = window.innerWidth;
   console.log({ newMessages });
   return (
-    <ChatListDiv style={{ overflow: "none" }}>
+    <ChatListDiv style={{ overflowY: "auto" }}>
       <ChatListItem
         style={{
           backgroundColor: theme.colors.darkBlue,
@@ -115,10 +115,10 @@ const ChatListDiv = styled("div", {
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
   overflowX: "hidden",
   minWidth: "280px",
+  height: "100%",
   "@bp1": {
     width: "100%",
     // position: "absolute",
-    height: "100%",
   },
 });
 

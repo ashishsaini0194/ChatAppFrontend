@@ -180,30 +180,39 @@ function Chat() {
         >
           {/* <Sidebar /> */}
           <MainDiv>
-            {(showSideBar || deviceWidth > fixedWidth) && (
-              <ChatList
-                myDetails={myDetails}
-                chats={Object.values(allGuestUsers)}
-                disconnectedGuestUsers={disconnectedGuestUsers}
-                selectedChat={selectedChat}
-                onSelectChat={setSelectedChat}
-                newMessages={newMessages}
-                setShowSideBar={setShowSideBar}
-              />
-            )}
-            {(!showSideBar || deviceWidth > fixedWidth) && (
-              <ChatWindow
-                sendMessage={sendMessage}
-                chat={selectedChat}
-                disconnected={
-                  disconnectedGuestUsers[selectedChat?.id] ? true : false
-                }
-                senderId={document.socket?.id || ""}
-                allMessages={allMessages[selectedChat?.id]}
-                setShowSideBar={setShowSideBar}
-                ifNewMessage={Object.keys(newMessages).length > 0}
-              />
-            )}
+            {
+              <ChatListParent
+                style={{
+                  transform:
+                    showSideBar || deviceWidth > fixedWidth
+                      ? "none"
+                      : "translateX(-105%)",
+                }}
+              >
+                <ChatList
+                  myDetails={myDetails}
+                  chats={Object.values(allGuestUsers)}
+                  disconnectedGuestUsers={disconnectedGuestUsers}
+                  selectedChat={selectedChat}
+                  onSelectChat={setSelectedChat}
+                  newMessages={newMessages}
+                  setShowSideBar={setShowSideBar}
+                />
+              </ChatListParent>
+            }
+            {/* {(!showSideBar || deviceWidth > fixedWidth) && ( */}
+            <ChatWindow
+              sendMessage={sendMessage}
+              chat={selectedChat}
+              disconnected={
+                disconnectedGuestUsers[selectedChat?.id] ? true : false
+              }
+              senderId={document.socket?.id || ""}
+              allMessages={allMessages[selectedChat?.id]}
+              setShowSideBar={setShowSideBar}
+              ifNewMessage={Object.keys(newMessages).length > 0}
+            />
+            {/* )} */}
           </MainDiv>
         </div>
       </StyledContainer>
@@ -237,4 +246,12 @@ const StyledContainer = styled(Container, {
   // "@bp1": {
   //   padding: "0px !important",
   // },
+});
+
+const ChatListParent = styled("div", {
+  "@bp1": {
+    width: "100%",
+    transition: "transform 0.3s ease-in-out",
+    zIndex: 1,
+  },
 });

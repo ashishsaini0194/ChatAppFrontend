@@ -115,8 +115,10 @@ const ChatWindowDiv = styled("div", {
   boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
   "@bp1": {
     flex: "auto",
-    width: "100%",
     borderLeft: "none",
+    position: "fixed",
+    height: "100%",
+    width: "92%",
   },
 });
 
@@ -132,6 +134,11 @@ const ChatWindowHeader = styled("div", {
     margin: 0,
     fontSize: 18,
     fontWeight: 600,
+  },
+  "@bp1": {
+    h2: {
+      fontSize: 15,
+    },
   },
 });
 
