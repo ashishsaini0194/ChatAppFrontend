@@ -58,7 +58,7 @@ function Chat() {
     });
     if (!checkLogin()) return;
     setTimeout(() => {
-      if (!socket) {
+      if (!socket && document.socket == undefined) {
         socket = io(process.env.REACT_APP_BACKEND_URL, {
           reconnection: true, // Enable reconnection
           reconnectionAttempts: 5, // Number of reconnection attempts
@@ -66,16 +66,18 @@ function Chat() {
           reconnectionDelayMax: 5000, // Maximum delay between reconnections
         });
       }
-      document.socket = socket;
+      if (document.socket) {
+        socket = document.socket;
+      } else document.socket = socket;
       setDocumentSocket(!documentSocket);
       // socket.on("connect", () => {
       //   // console.log("socketId ", socket.id);
       // });
     }, 0);
 
-    return () => {
-      if (socket) socket.disconnect();
-    };
+    // return () => {
+    //   if (socket) socket.disconnect();
+    // };
   }, []);
 
   if (document.socket) {
