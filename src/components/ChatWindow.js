@@ -1,6 +1,8 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
+import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 function ChatWindow({
   chat,
@@ -8,14 +10,30 @@ function ChatWindow({
   disconnected,
   senderId,
   allMessages = [],
+  showSideBar,
   setShowSideBar,
   ifNewMessage,
 }) {
+  const [responseState, setResponseState] = useState({});
   const textRef = useRef(null);
+  useEffect(() => {
+    if (textRef.current && !showSideBar) {
+      textRef.current.focus();
+    }
+  }, [showSideBar]);
+  useEffect(() => {
+    if (textRef.current) {
+      textRef.current.value = "";
+    }
+  }, [chat]);
   const send = () => {
     const message = textRef.current.value;
     if (!message) {
-      alert("message can't be empty !");
+      setResponseState({
+        type: validTypes.error,
+        message: "message can't be empty !",
+        setState: setResponseState,
+      });
       return;
     }
     const data = { message, id: chat.id, senderId };
@@ -77,12 +95,14 @@ function ChatWindow({
             type="text"
             placeholder="Type a message..."
           />
+          <AttachFileIcon style={{ color: "white" }} />
           <button disabled={disconnected} onClick={send}>
             Send
           </button>
           {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
+      {responseState && <ErrorResponseComp {...responseState} />}
     </ChatWindowDiv>
   );
 }
@@ -171,6 +191,9 @@ const ChatWindowInput = styled("div", {
       marginRight: 0,
       flex: "none",
       width: "67%",
+      backgroundColor: theme.colors.darkBlue,
+      color: "white",
+      border: "none",
     },
   },
   button: {
@@ -187,6 +210,7 @@ const ChatWindowInput = styled("div", {
       marginLeft: 0,
       borderRadius: 4,
       fontWeight: 600,
+      color: "rgb(15, 87, 131)",
     },
   },
   "@bp1": {
@@ -205,4 +229,9 @@ const SenderAndReceiver = styled("div", {
   display: "flex",
   alignItems: "center",
   margin: "1px 0px",
+  fontWeight: 600,
+  wordBreak: "break-word",
+  "@bp1": {
+    fontSize: 14,
+  },
 });

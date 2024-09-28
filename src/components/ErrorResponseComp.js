@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 export const validTypes = {
   success: "success",
   info: "info",
@@ -7,8 +7,13 @@ export const validTypes = {
   error: "error",
 };
 
-export function ErrorResponseComp({ type, message = "" }) {
+export function ErrorResponseComp({ type, message = "", setState }) {
   if (!validTypes[type]) return <></>;
+  if (setState) {
+    setTimeout(() => {
+      setState(undefined);
+    }, 2000);
+  }
   return (
     <>
       {" "}

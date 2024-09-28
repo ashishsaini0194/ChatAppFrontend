@@ -209,6 +209,7 @@ function Chat() {
               }
               senderId={document.socket?.id || ""}
               allMessages={allMessages[selectedChat?.id]}
+              showSideBar={showSideBar}
               setShowSideBar={setShowSideBar}
               ifNewMessage={Object.keys(newMessages).length > 0}
             />
