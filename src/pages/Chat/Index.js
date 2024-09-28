@@ -115,15 +115,15 @@ function Chat() {
           setAllMessages(newObj);
         } else {
           const newObj = updateMessages(message, receiverId, newMessages);
+          setNewMessages(newObj);
+          pullNewMessages();
+
           const count = newObj[receiverId].length;
           showNotification({
             message: `${newObj[receiverId].length} ${
               count > 1 ? "new messages" : "new message"
             }`,
           }); // if chat is not selected then show push notification
-          setNewMessages(newObj);
-
-          pullNewMessages();
         }
       }
     );
