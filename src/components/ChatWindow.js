@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { styled, theme } from "../stichesConfig";
+import { fixedWidth, styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -15,6 +15,7 @@ function ChatWindow({
   ifNewMessage,
 }) {
   const [responseState, setResponseState] = useState({});
+  const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
   useEffect(() => {
     if (textRef.current && !showSideBar) {
@@ -102,7 +103,17 @@ function ChatWindow({
           {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
-      {responseState && <ErrorResponseComp {...responseState} />}
+      {responseState && (
+        <ErrorResponseComp
+          {...responseState}
+          timeout={1000}
+          propStyle={
+            deviceWidth <= fixedWidth
+              ? { bottom: "15%", right: "3%" }
+              : { bottom: "10%", right: "22%" }
+          }
+        />
+      )}
     </ChatWindowDiv>
   );
 }
@@ -190,7 +201,7 @@ const ChatWindowInput = styled("div", {
       borderRadius: 4,
       marginRight: 0,
       flex: "none",
-      width: "67%",
+      width: "60%",
       backgroundColor: theme.colors.darkBlue,
       color: "white",
       border: "none",

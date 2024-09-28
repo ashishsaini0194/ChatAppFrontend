@@ -7,18 +7,24 @@ export const validTypes = {
   error: "error",
 };
 
-export function ErrorResponseComp({ type, message = "", setState }) {
+export function ErrorResponseComp({
+  type,
+  message = "",
+  setState = (data) => {},
+  timeout = 2000,
+  propStyle = {},
+}) {
   if (!validTypes[type]) return <></>;
   if (setState) {
     setTimeout(() => {
       setState(undefined);
-    }, 2000);
+    }, timeout);
   }
   return (
     <>
       {" "}
       <Alert
-        sx={{ ...CommonStyle }}
+        sx={{ ...CommonStyle, ...propStyle }}
         variant="filled"
         severity={validTypes[type]}
       >
