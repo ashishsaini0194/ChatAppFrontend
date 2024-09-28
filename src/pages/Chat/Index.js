@@ -5,6 +5,7 @@ import ChatList from "../../components/ChatList";
 import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
+import { showNotification } from "../../components/PushNotification";
 
 function Chat() {
   const [showSideBar, setShowSideBar] = useState(true);
@@ -52,6 +53,9 @@ function Chat() {
   };
 
   useEffect(() => {
+    Notification.requestPermission().then((result) => {
+      console.log(result);
+    });
     if (!checkLogin()) return;
     setTimeout(() => {
       if (!socket) {
@@ -109,7 +113,14 @@ function Chat() {
           setAllMessages(newObj);
         } else {
           const newObj = updateMessages(message, receiverId, newMessages);
+          const count = newObj[receiverId].length;
+          showNotification({
+            message: `${newObj[receiverId].length} ${
+              count > 1 ? "new messages" : "new message"
+            }`,
+          }); // if chat is not selected then show push notification
           setNewMessages(newObj);
+
           pullNewMessages();
         }
       }
