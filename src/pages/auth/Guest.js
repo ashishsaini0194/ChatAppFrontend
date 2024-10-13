@@ -6,9 +6,9 @@ import {
   Link,
   Typography,
 } from "@mui/material";
-import { styled } from "@stitches/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { styled } from "../../stichesConfig";
 
 export const Guest = (props) => {
   const navigate = useNavigate();
@@ -49,21 +49,27 @@ export const Guest = (props) => {
           </Link>
         </Typography>
 
-        <Typography
+        <StyledTypography
           variant="h7"
           color="grey"
           align="left"
-          marginTop={10}
           fontSize={"14px"}
         >
           <b>Note:</b> As a guest user your message history will not be
           recorded, data can not be saved with our servers and you will be
           entering as a anonymous person with a random name assigned.
-        </Typography>
+        </StyledTypography>
       </ParentDiv>
     </div>
   );
 };
+
+const StyledTypography = styled(Typography, {
+  marginTop: "80px !important",
+  "@bp1": {
+    marginTop: "65px !important",
+  },
+});
 
 const ParentDiv = styled("div", {
   display: "flex",
@@ -74,6 +80,10 @@ const ParentDiv = styled("div", {
   border: "1px solid grey",
   padding: 40,
   borderRadius: 10,
+  "@bp1": {
+    padding: "30px 20px",
+    width: "280px",
+  },
 });
 
 const LoginText = styled("h1", {

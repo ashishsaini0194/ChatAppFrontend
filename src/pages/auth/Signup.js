@@ -1,5 +1,5 @@
 import { Alert, Button, Input, Link, Typography } from "@mui/material";
-import { styled } from "@stitches/react";
+import { styled } from "../../stichesConfig";
 import React, { useRef, useState } from "react";
 import {
   ErrorResponseComp,
@@ -112,7 +112,7 @@ export const Signup = () => {
             Sign in
           </Link>
         </Typography>
-        <Typography
+        <StyledTypography
           style={{
             color: "palevioletred",
             marginTop: "73px",
@@ -121,12 +121,19 @@ export const Signup = () => {
           }}
         >
           Note: Under development
-        </Typography>
+        </StyledTypography>
       </ParentDiv>
       {responseState && <ErrorResponseComp {...responseState} />}
     </div>
   );
 };
+
+const StyledTypography = styled(Typography, {
+  marginTop: "73px !important",
+  "@bp1": {
+    marginTop: "55px !important",
+  },
+});
 
 const ParentDiv = styled("div", {
   display: "flex",
@@ -137,6 +144,10 @@ const ParentDiv = styled("div", {
   border: "1px solid grey",
   padding: 40,
   borderRadius: 10,
+  "@bp1": {
+    padding: "30px 20px",
+    width: "280px",
+  },
 });
 
 const Signuptext = styled("h1", {
