@@ -15,7 +15,7 @@ function ChatList({
 }) {
   const [isGuestUser, setIsGuestUser] = useState(true);
   const deviceWidth = window.innerWidth;
-  console.log({ newMessages });
+  // console.log({ newMessages });
   return (
     <ChatListDiv style={{ overflowY: "auto" }}>
       <ChatListItem
@@ -138,7 +138,7 @@ const ChatListItem = styled("div", {
     },
   },
   "@bp1": {
-    width: "100%",
+    // width: "100%",
   },
 });
 

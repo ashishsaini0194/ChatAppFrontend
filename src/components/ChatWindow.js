@@ -142,7 +142,7 @@ const ChatWindowDiv = styled("div", {
   display: "flex",
   flexDirection: "column",
   backgroundColor: theme.colors.darkBlue,
-  borderLeft: "1px solid #ddd",
+  // borderLeft: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
   "@bp1": {
     flex: "auto",

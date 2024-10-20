@@ -196,10 +196,11 @@ function Chat() {
             {
               <ChatListParent
                 style={{
-                  transform:
-                    showSideBar || deviceWidth > fixedWidth
-                      ? "none"
-                      : "translateX(-105%)",
+                  transform: showSideBar
+                    ? deviceWidth <= fixedWidth
+                      ? "translateX(-5%)"
+                      : "none"
+                    : "translateX(-105%)",
                 }}
               >
                 <ChatList
