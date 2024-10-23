@@ -13,6 +13,7 @@ function ChatWindow({
   showSideBar,
   setShowSideBar,
   ifNewMessage,
+  sendFile,
 }) {
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
@@ -49,6 +50,11 @@ function ChatWindow({
       </ChatWindowDiv>
     );
   }
+
+  const onfileSelect = (e) => {
+    sendFile(e.target.files);
+    // e.target.value = "";
+  };
 
   return (
     <ChatWindowDiv>
@@ -96,7 +102,19 @@ function ChatWindow({
             type="text"
             placeholder="Type a message..."
           />
-          <AttachFileIcon style={{ color: "white" }} />
+
+          <label for="myfile">
+            {/* for attribute work fine with label only */}
+            <AttachFileIcon style={{ color: "white" }} />
+          </label>
+          <input
+            type="file"
+            style={{ display: "none" }}
+            name="myfile"
+            id="myfile"
+            onChange={onfileSelect}
+            multiple 
+          />
           <button disabled={disconnected} onClick={send}>
             Send
           </button>

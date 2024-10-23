@@ -6,6 +6,7 @@ import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
+const chunkSize = 1024;
 
 function Chat() {
   const [showSideBar, setShowSideBar] = useState(true);
@@ -151,6 +152,17 @@ function Chat() {
     });
   };
 
+  const chunksFileData = (file) => {
+    const size = file.size;
+  };
+
+  const sendFile = (files) => {
+    // console.log(files);
+    for (var a of files) {
+      console.log(a);
+    }
+  };
+
   if (!checkLogin()) {
     return (
       <>
@@ -226,6 +238,7 @@ function Chat() {
               showSideBar={showSideBar}
               setShowSideBar={setShowSideBar}
               ifNewMessage={Object.keys(newMessages).length > 0}
+              sendFile={sendFile}
             />
             {/* )} */}
           </MainDiv>
