@@ -52,7 +52,7 @@ function ChatWindow({
   }
 
   const onfileSelect = (e) => {
-    sendFile(e.target.files);
+    sendFile({file:e.target.files,id: chat.id, senderId});
     // e.target.value = "";
   };
 
@@ -103,7 +103,7 @@ function ChatWindow({
             placeholder="Type a message..."
           />
 
-          <label for="myfile">
+          <label htmlFor="myfile">
             {/* for attribute work fine with label only */}
             <AttachFileIcon style={{ color: "white" }} />
           </label>
