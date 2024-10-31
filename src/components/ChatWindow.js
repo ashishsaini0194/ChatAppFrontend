@@ -52,7 +52,7 @@ function ChatWindow({
   }
 
   const onfileSelect = (e) => {
-    sendFile({file:e.target.files,id: chat.id, senderId});
+    sendFile({ file: e.target.files, id: chat.id, senderId });
     // e.target.value = "";
   };
 
@@ -85,7 +85,8 @@ function ChatWindow({
               }
               key={index}
             >
-              {each.message}
+              {typeof message === "string" && each.message}
+              {typeof message !== "string" && each.message.name}
             </SenderAndReceiver>
           );
         })}
@@ -113,7 +114,7 @@ function ChatWindow({
             name="myfile"
             id="myfile"
             onChange={onfileSelect}
-            multiple 
+            multiple
           />
           <button disabled={disconnected} onClick={send}>
             Send

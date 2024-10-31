@@ -6,7 +6,7 @@ import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
-const chunkSize = 1024;
+let chunkSize = 1024;
 
 function Chat() {
   const [showSideBar, setShowSideBar] = useState(true);
@@ -121,35 +121,44 @@ function Chat() {
     document.socket.on(
       "singleUserMessageReceived",
       ({ message, receiverId, type }) => {
-        if (type === "file") {
-          const parseMessage = JSON.parse(message);
-          // console.log(
-          //   "message received",
-          //   parseMessage,
-          //   receiverId,
-          //   selectedChat,
-          //   type
-          // );
+        // console.log(
+        //   "message received",
+        //   parseMessage,
+        //   receiverId,
+        //   selectedChat,
+        //   type
+        // );
 
-          fileMessages.push(parseMessage);
-          if (parseMessage.final) {
-            const blobUrl = bufferToBlob();
+        let parseMessage = message;
+        if (type === "file") {
+          parseMessage = JSON.parse(message);
+          if (parseMessage.type != fileMessages[0]?.type) {
+            fileMessages = []; // resest chunk if file type differs from previous chunks
           }
-          return;
-        } else {
-          // console.log(
-          //   "message received",
-          //   { message, receiverId },
-          //   selectedChat,
-          //   type
-          // );
+          fileMessages.push(parseMessage);
+
+          if (!parseMessage.final) {
+            return;
+          }
+          // console.log(fileMessages, parseMessage.size);
+          bufferToBlob();
         }
 
         if (selectedChat?.id === receiverId) {
-          const newObj = updateMessages(message, receiverId, allMessages);
+          const newObj = updateMessages(
+            type === "file" ? parseMessage : message,
+            receiverId,
+            allMessages,
+            type
+          );
           setAllMessages(newObj);
         } else {
-          const newObj = updateMessages(message, receiverId, newMessages);
+          const newObj = updateMessages(
+            type === "file" ? parseMessage : message,
+            receiverId,
+            newMessages,
+            type
+          );
           const count = newObj[receiverId].length;
           showNotification({
             message: `${newObj[receiverId].length} ${
@@ -164,11 +173,11 @@ function Chat() {
     );
   }
 
-  const updateMessages = (message, receiverId, source) => {
+  const updateMessages = (message, receiverId, source, typeOfMessage) => {
     const newObj = { ...source };
     newObj[receiverId] = [
       ...(source[receiverId] || []),
-      { message: message, yourId: receiverId },
+      { message: message, yourId: receiverId, typeOfMessage },
     ];
     return newObj;
   };
@@ -193,7 +202,7 @@ function Chat() {
         const newObj = { ...allMessages };
         newObj[data.id] = [
           ...(allMessages[data.id] || []),
-          { message: data.message.name, myId: data.senderId, yourId: data.id },
+          { message: data.message, myId: data.senderId, yourId: data.id },
         ];
         setAllMessages(newObj);
         return;
@@ -202,6 +211,9 @@ function Chat() {
   };
 
   function* getfileARr(file) {
+    const InKB = file.size / chunkSize;
+    if (InKB > 100) chunkSize = file.size / 100; //changing chunk size if the file is too big, so that maximum number of chunks will be 100
+
     for (let i = 0; i < file.size; i += chunkSize) {
       const singleChunk = file.slice(i, i + chunkSize);
       yield {
@@ -210,6 +222,7 @@ function Chat() {
         size: file.size,
         type: file.type,
         final: i + chunkSize >= file.size ? true : false,
+        percentageDone: (i + chunkSize) / file.size,
       };
     }
   }
