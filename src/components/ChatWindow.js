@@ -3,6 +3,7 @@ import { fixedWidth, styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DownloadIcon from "@mui/icons-material/Download";
 
 function ChatWindow({
   chat,
@@ -39,7 +40,7 @@ function ChatWindow({
       return;
     }
     const data = { message, id: chat.id, senderId };
-    sendMessage(data);
+    sendMessage(data, "text");
     textRef.current.value = "";
   };
 
@@ -54,6 +55,13 @@ function ChatWindow({
   const onfileSelect = (e) => {
     sendFile({ file: e.target.files, id: chat.id, senderId });
     // e.target.value = "";
+  };
+
+  const downloadFile = (blobUrl, name) => {
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = name;
+    a.click();
   };
 
   return (
@@ -81,12 +89,24 @@ function ChatWindow({
                   marginLeft: "auto",
                   backgroundColor: "rgb(233 233 233)",
                   color: "#0f5783",
+                  paddingRight: each.typeOfMessage ? 12 : "auto",
                 }
               }
               key={index}
             >
-              {typeof message === "string" && each.message}
-              {typeof message !== "string" && each.message.name}
+              {each.typeOfMessage === "text" && each.message}
+              {each.typeOfMessage === "file" && (
+                <>
+                  {each.message.name}
+                  <DownloadIcon
+                    fontSize="12px"
+                    style={{ marginLeft: 10, marginTop: 3 }}
+                    onClick={() =>
+                      downloadFile(each.blobUrl, each.message.name)
+                    }
+                  />
+                </>
+              )}
             </SenderAndReceiver>
           );
         })}

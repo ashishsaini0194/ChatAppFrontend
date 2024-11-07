@@ -82,6 +82,18 @@ function Chat() {
     // };
   }, []);
 
+  const bufferToBlob = () => {
+    const buffers = [];
+    fileMessages.forEach((eachBuffer) => {
+      buffers.push(new Uint8Array(eachBuffer.singleChunk.data));
+    });
+    const blobData = new Blob(buffers, { type: fileMessages[0].type });
+    const link = URL.createObjectURL(blobData);
+    console.log(link);
+    fileMessages = [];
+    return link;
+  };
+
   if (document.socket) {
     document.socket.removeAllListeners("guests");
     document.socket.on("guests", (data) => {
@@ -106,17 +118,6 @@ function Chat() {
       setDisconnectedAllGuestUsers({ ...obj });
     });
 
-    const bufferToBlob = () => {
-      const buffers = [];
-      fileMessages.forEach((eachBuffer) => {
-        buffers.push(new Uint8Array(eachBuffer.singleChunk.data));
-      });
-      const blobData = new Blob(buffers, { type: fileMessages[0].type });
-      const link = URL.createObjectURL(blobData);
-      console.log(link);
-      fileMessages = [];
-    };
-
     document.socket.removeAllListeners("singleUserMessageReceived");
     document.socket.on(
       "singleUserMessageReceived",
@@ -130,6 +131,7 @@ function Chat() {
         // );
 
         let parseMessage = message;
+        let blobUrl = undefined;
         if (type === "file") {
           parseMessage = JSON.parse(message);
           if (parseMessage.type != fileMessages[0]?.type) {
@@ -141,7 +143,7 @@ function Chat() {
             return;
           }
           // console.log(fileMessages, parseMessage.size);
-          bufferToBlob();
+          blobUrl = bufferToBlob();
         }
 
         if (selectedChat?.id === receiverId) {
@@ -149,7 +151,8 @@ function Chat() {
             type === "file" ? parseMessage : message,
             receiverId,
             allMessages,
-            type
+            type,
+            blobUrl
           );
           setAllMessages(newObj);
         } else {
@@ -157,7 +160,8 @@ function Chat() {
             type === "file" ? parseMessage : message,
             receiverId,
             newMessages,
-            type
+            type,
+            blobUrl
           );
           const count = newObj[receiverId].length;
           showNotification({
@@ -173,22 +177,34 @@ function Chat() {
     );
   }
 
-  const updateMessages = (message, receiverId, source, typeOfMessage) => {
+  const updateMessages = (
+    message,
+    receiverId,
+    source,
+    typeOfMessage,
+    blobUrl
+  ) => {
     const newObj = { ...source };
     newObj[receiverId] = [
       ...(source[receiverId] || []),
-      { message: message, yourId: receiverId, typeOfMessage },
+      { message: message, yourId: receiverId, typeOfMessage, blobUrl },
     ];
     return newObj;
   };
 
-  const sendMessage = async (data) => {
+  const sendMessage = async (data, typeOfMessage) => {
     document.socket.emit("singleUserMessage", data, ({ status }) => {
       if (status) {
         const newObj = { ...allMessages };
         newObj[data.id] = [
           ...(allMessages[data.id] || []),
-          { message: data.message, myId: data.senderId, yourId: data.id },
+          {
+            message: data.message,
+            myId: data.senderId,
+            yourId: data.id,
+            typeOfMessage,
+            blobUrl: data?.blobUrl,
+          },
         ];
         setAllMessages(newObj);
         return;
@@ -196,19 +212,24 @@ function Chat() {
     });
   };
 
-  const sendFileMessage = async (data) => {
-    return document.socket.emit("singleUserMessage", data, ({ status }) => {
-      if (status) {
-        const newObj = { ...allMessages };
-        newObj[data.id] = [
-          ...(allMessages[data.id] || []),
-          { message: data.message, myId: data.senderId, yourId: data.id },
-        ];
-        setAllMessages(newObj);
-        return;
-      }
-    });
-  };
+  // const sendFileMessage = async (data) => {
+  //   document.socket.emit("singleUserMessage", data, ({ status }) => {
+  //     if (status) {
+  //       const newObj = { ...allMessages };
+  //       newObj[data.id] = [
+  //         ...(allMessages[data.id] || []),
+  //         {
+  //           message: data.message,
+  //           myId: data.senderId,
+  //           yourId: data.id,
+  //           typeOfMessage: "file",
+  //         },
+  //       ];
+  //       setAllMessages(newObj);
+  //       return;
+  //     }
+  //   });
+  // };
 
   function* getfileARr(file) {
     const InKB = file.size / chunkSize;
@@ -229,7 +250,12 @@ function Chat() {
 
   const sendHere = async (file, id, senderId) => {
     for (var chunk of getfileARr(file)) {
-      await sendFileMessage({ message: chunk, id, senderId });
+      let blobUrl = undefined;
+      fileMessages.push(chunk);
+      if (chunk.final) {
+        blobUrl = bufferToBlob();
+      }
+      await sendMessage({ message: chunk, id, senderId, blobUrl }, "file");
     }
   };
 
