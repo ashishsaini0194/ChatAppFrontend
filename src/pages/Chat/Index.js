@@ -56,7 +56,7 @@ function Chat() {
 
   useEffect(() => {
     Notification.requestPermission().then((result) => {
-      console.log(result);
+      // console.log(result);
     });
     if (!checkLogin()) return;
     setTimeout(() => {
@@ -85,11 +85,14 @@ function Chat() {
   const bufferToBlob = () => {
     const buffers = [];
     fileMessages.forEach((eachBuffer) => {
-      buffers.push(new Uint8Array(eachBuffer.singleChunk.data));
+      buffers.push(
+        eachBuffer.singleChunk.data
+          ? new Uint8Array(eachBuffer.singleChunk.data) // for reciever buffer data
+          : eachBuffer.singleChunk // for sender blob data
+      );
     });
     const blobData = new Blob(buffers, { type: fileMessages[0].type });
     const link = URL.createObjectURL(blobData);
-    console.log(link);
     fileMessages = [];
     return link;
   };
@@ -111,7 +114,6 @@ function Chat() {
 
     document.socket.removeAllListeners("disconnectedGuest"); //removing old listeners to prevent multiple times output
     document.socket.on("disconnectedGuest", (userId) => {
-      console.log({ allGuestUsers });
       let obj = disconnectedGuestUsers;
       obj[userId] = userId;
 
@@ -142,7 +144,6 @@ function Chat() {
           if (!parseMessage.final) {
             return;
           }
-          // console.log(fileMessages, parseMessage.size);
           blobUrl = bufferToBlob();
         }
 
@@ -196,6 +197,9 @@ function Chat() {
     let messageData = data.message;
     if (typeOfMessage === "file") {
       messageData = data.message();
+      if (messageData.final) {
+        data.blobUrl = bufferToBlob();
+      }
     }
     document.socket.emit(
       "singleUserMessage",
@@ -236,7 +240,7 @@ function Chat() {
     return () => {
       const singleChunk = file.slice(iFrom, (iFrom += chunkSize));
 
-      return {
+      const obj = {
         singleChunk,
         name: file.name,
         size: file.size,
@@ -244,6 +248,8 @@ function Chat() {
         final: iFrom >= file.size ? true : false,
         percentageDone: iFrom / file.size,
       };
+      fileMessages.push(obj);
+      return obj;
     };
   };
 
