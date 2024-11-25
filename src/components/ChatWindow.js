@@ -97,16 +97,27 @@ function ChatWindow({
               {each.typeOfMessage === "text" && each.message}
               {each.typeOfMessage === "file" && (
                 <>
-                  {each.message?.percentageDone < 1
-                    ? Math.round(each.message?.percentageDone * 100)
-                    : each.message.name}
-                  <DownloadIcon
-                    fontSize="12px"
-                    style={{ marginLeft: 10, marginTop: 3 }}
-                    onClick={() =>
-                      downloadFile(each.blobUrl, each.message.name)
-                    }
-                  />
+                  {/* {each.message?.percentageDone < 1
+                    ? `${each.message.name} ${Math.round(
+                        each.message?.percentageDone * 100
+                      )}`
+                    : each.message.name} */}
+                  {each.message.name}{" "}
+                  {each.message?.percentageDone < 1 ? (
+                    <span
+                      style={{ fontSize: 14, marginLeft: 10, marginTop: 3 }}
+                    >
+                      {Math.round(each.message?.percentageDone * 100)}%
+                    </span>
+                  ) : (
+                    <DownloadIcon
+                      fontSize="12px"
+                      style={{ marginLeft: 10, marginTop: 3 }}
+                      onClick={() =>
+                        downloadFile(each.blobUrl, each.message.name)
+                      }
+                    />
+                  )}
                 </>
               )}
             </SenderAndReceiver>

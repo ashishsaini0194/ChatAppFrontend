@@ -94,6 +94,9 @@ function Chat() {
     const blobData = new Blob(buffers, { type: fileMessages[0].type });
     const link = URL.createObjectURL(blobData);
     fileMessages = [];
+    setTimeout(() => {
+      URL.revokeObjectURL(link);
+    }, 1800000); // link will be revoked and memory will be freed after 30 minutes
     return link;
   };
 
@@ -193,7 +196,13 @@ function Chat() {
     return newObj;
   };
 
+  // useEffect(() => {
+  //   console.log(allMessages[selectedChat?.id]);
+  // }, [allMessages]);
+
   const sendMessage = async (data, typeOfMessage) => {
+    // console.log(explicitAllMessages);
+
     let messageData = data.message;
     if (typeOfMessage === "file") {
       messageData = data.message();
@@ -222,9 +231,7 @@ function Chat() {
 
           if (typeOfMessage === "file") {
             if (!messageData.final) {
-              setTimeout(() => {
-                sendMessage(data, "file");
-              }, 0);
+              sendMessage(data, "file");
             }
           }
         }
