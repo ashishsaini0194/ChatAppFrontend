@@ -6,6 +6,7 @@ import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
+
 let chunkSize = 1024;
 
 function Chat() {
@@ -28,12 +29,10 @@ function Chat() {
     const messages = newMessages[selectedChat.id];
     if (!messages) return;
     let newObj = { ...allMessages };
-    messages.forEach((each) => {
-      newObj[selectedChat.id] = [
-        ...(newObj[selectedChat.id] || []),
-        { ...each },
-      ];
-    });
+    newObj[selectedChat.id] = {
+      ...(newObj[selectedChat.id] || {}),
+      ...messages,
+    };
     setAllMessages(newObj);
 
     let obj = { ...newMessages };
@@ -96,7 +95,7 @@ function Chat() {
     fileMessages = [];
     setTimeout(() => {
       URL.revokeObjectURL(link);
-    }, 1800000); // link will be revoked and memory will be freed after 30 minutes
+    }, 300000); // link will be revoked and memory will be freed after 5 minutes
     return link;
   };
 
@@ -126,7 +125,7 @@ function Chat() {
     document.socket.removeAllListeners("singleUserMessageReceived");
     document.socket.on(
       "singleUserMessageReceived",
-      ({ message, receiverId, type }) => {
+      ({ message, receiverId, type, messageId }) => {
         // console.log(
         //   "message received",
         //   message,
@@ -156,7 +155,8 @@ function Chat() {
             receiverId,
             allMessages,
             type,
-            blobUrl
+            blobUrl,
+            messageId
           );
           setAllMessages(newObj);
         } else {
@@ -165,11 +165,12 @@ function Chat() {
             receiverId,
             newMessages,
             type,
-            blobUrl
+            blobUrl,
+            messageId
           );
           const count = newObj[receiverId].length;
           showNotification({
-            message: `${newObj[receiverId].length} ${
+            message: `${Object.values(newObj[receiverId] || {}).length} ${
               count > 1 ? "new messages" : "new message"
             }`,
           }); // if chat is not selected then show push notification
@@ -186,13 +187,19 @@ function Chat() {
     receiverId,
     source,
     typeOfMessage,
-    blobUrl
+    blobUrl,
+    messageId
   ) => {
     const newObj = { ...source };
-    newObj[receiverId] = [
-      ...(source[receiverId] || []),
-      { message: message, yourId: receiverId, typeOfMessage, blobUrl },
-    ];
+    newObj[receiverId] = {
+      ...(source[receiverId] || {}),
+      [messageId]: {
+        message: message,
+        yourId: receiverId,
+        typeOfMessage,
+        blobUrl,
+      },
+    };
     return newObj;
   };
 
@@ -202,6 +209,8 @@ function Chat() {
 
   const sendMessage = async (data, typeOfMessage) => {
     // console.log(explicitAllMessages);
+    const messageId = window.crypto.randomUUID();
+    // console.log(data, typeOfMessage, messageId);
 
     let messageData = data.message;
     if (typeOfMessage === "file") {
@@ -210,22 +219,24 @@ function Chat() {
         data.blobUrl = bufferToBlob();
       }
     }
+
     document.socket.emit(
       "singleUserMessage",
-      { ...data, message: messageData },
+      { ...data, message: messageData, messageId },
       ({ status }) => {
         if (status) {
           const newObj = { ...allMessages };
-          newObj[data.id] = [
-            ...(allMessages[data.id] || []),
-            {
+          newObj[data.id] = {
+            ...(allMessages[data.id] || {}),
+            [messageId]: {
               message: messageData,
               myId: data.senderId,
               yourId: data.id,
               typeOfMessage,
               blobUrl: data?.blobUrl,
+              messageId,
             },
-          ];
+          };
           // console.log("sent", messageData);
           setAllMessages(newObj);
 
@@ -343,7 +354,9 @@ function Chat() {
                 disconnectedGuestUsers[selectedChat?.id] ? true : false
               }
               senderId={document.socket?.id || ""}
-              allMessages={allMessages[selectedChat?.id]}
+              allMessages={
+                Object.values(allMessages[selectedChat?.id] || {}) || []
+              }
               showSideBar={showSideBar}
               setShowSideBar={setShowSideBar}
               ifNewMessage={Object.keys(newMessages).length > 0}

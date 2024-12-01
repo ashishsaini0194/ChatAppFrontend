@@ -75,11 +75,15 @@ function ChatList({
             )}
             <ChatListItemDetails>
               <h4>{chat.name}</h4>
-              {newMessages[chat.id]?.length > 0 && (
+              {Object.keys(newMessages[chat.id] || {})?.length > 0 && (
                 <p style={{ color: "white", fontWeight: 600 }}>
-                  {newMessages[chat.id]?.length === 1
-                    ? `${newMessages[chat.id]?.length} new message `
-                    : `${newMessages[chat.id]?.length} new messages `}
+                  {Object.keys(newMessages[chat.id] || {})?.length === 1
+                    ? `${
+                        Object.keys(newMessages[chat.id] || {}).length
+                      } new message `
+                    : `${
+                        Object.keys(newMessages[chat.id] || {}).length
+                      } new messages `}
                 </p>
               )}
               {disconnectedGuestUsers[chat.id] && (
