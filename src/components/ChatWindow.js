@@ -53,8 +53,9 @@ function ChatWindow({
   }
 
   const onfileSelect = (e) => {
-    sendFile({ file: e.target.files, id: chat.id, senderId });
-    // e.target.value = "";
+    const allFiles = [...e.target.files];
+    sendFile({ file: allFiles, id: chat.id, senderId });
+    e.target.value = "";
   };
 
   const downloadFile = (blobUrl, name) => {

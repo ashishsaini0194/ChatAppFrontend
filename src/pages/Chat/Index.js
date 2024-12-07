@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import ChatList from "../../components/ChatList";
@@ -16,13 +16,14 @@ function Chat() {
   const [allGuestUsers, setAllGuestUsers] = useState({});
   const [disconnectedGuestUsers, setDisconnectedAllGuestUsers] = useState({});
   const [allMessages, setAllMessages] = useState({});
+  let allMessagesObj = { ...allMessages };
   const [newMessages, setNewMessages] = useState({});
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
   const [documentSocket, setDocumentSocket] = useState(true);
   let socket = undefined;
   const deviceWidth = window.innerWidth;
-  let fileMessages = [];
+  let fileMessages = useRef([]);
 
   const pullNewMessages = () => {
     if (!selectedChat) return;
@@ -83,16 +84,16 @@ function Chat() {
 
   const bufferToBlob = () => {
     const buffers = [];
-    fileMessages.forEach((eachBuffer) => {
+    fileMessages.current.forEach((eachBuffer) => {
       buffers.push(
         eachBuffer.singleChunk.data
           ? new Uint8Array(eachBuffer.singleChunk.data) // for reciever buffer data
           : eachBuffer.singleChunk // for sender blob data
       );
     });
-    const blobData = new Blob(buffers, { type: fileMessages[0].type });
+    const blobData = new Blob(buffers, { type: fileMessages.current[0].type });
     const link = URL.createObjectURL(blobData);
-    fileMessages = [];
+    fileMessages.current = [];
     setTimeout(() => {
       URL.revokeObjectURL(link);
     }, 300000); // link will be revoked and memory will be freed after 5 minutes
@@ -138,15 +139,14 @@ function Chat() {
         let blobUrl = undefined;
         if (type === "file") {
           parseMessage = JSON.parse(message);
-          if (parseMessage.type != fileMessages[0]?.type) {
-            fileMessages = []; // resest chunk if file type differs from previous chunks
+          if (parseMessage.type != fileMessages.current[0]?.type) {
+            fileMessages.current = []; // resest chunk if file type differs from previous chunks
           }
-          fileMessages.push(parseMessage);
+          fileMessages.current.push(parseMessage);
 
-          if (!parseMessage.final) {
-            return;
+          if (parseMessage.final) {
+            blobUrl = bufferToBlob();
           }
-          blobUrl = bufferToBlob();
         }
 
         if (selectedChat?.id === receiverId) {
@@ -203,13 +203,12 @@ function Chat() {
     return newObj;
   };
 
-  // useEffect(() => {
-  //   console.log(allMessages[selectedChat?.id]);
-  // }, [allMessages]);
+  useEffect(() => {
+    sessionStorage.setItem("data", JSON.stringify(allMessages));
+  }, [allMessages]);
 
-  const sendMessage = async (data, typeOfMessage) => {
-    // console.log(explicitAllMessages);
-    const messageId = window.crypto.randomUUID();
+  const sendMessage = async (data, typeOfMessage, recursionMessageId) => {
+    const messageId = recursionMessageId || window.crypto.randomUUID();
     // console.log(data, typeOfMessage, messageId);
 
     let messageData = data.message;
@@ -225,9 +224,11 @@ function Chat() {
       { ...data, message: messageData, messageId },
       ({ status }) => {
         if (status) {
-          const newObj = { ...allMessages };
-          newObj[data.id] = {
-            ...(allMessages[data.id] || {}),
+          // const newObj = JSON.parse(JSON.stringify(allMessagesObj));
+          const sessionData = JSON.parse(sessionStorage.getItem("data"));
+          if (sessionData) allMessagesObj = sessionData; // used session storage because recursion is taking old state
+          allMessagesObj[data.id] = {
+            ...(allMessagesObj[data.id] || {}),
             [messageId]: {
               message: messageData,
               myId: data.senderId,
@@ -237,12 +238,27 @@ function Chat() {
               messageId,
             },
           };
+
+          // newObj[data.id][messageId] = {
+          //   message: messageData,
+          //   myId: data.senderId,
+          //   yourId: data.id,
+          //   typeOfMessage,
+          //   blobUrl: data?.blobUrl,
+          //   messageId,
+          // };
           // console.log("sent", messageData);
-          setAllMessages(newObj);
+          // allMessagesObj = JSON.parse(JSON.stringify(newObj));
+          // allMessagesObj = newObj;
+
+          setAllMessages({ ...allMessagesObj });
 
           if (typeOfMessage === "file") {
             if (!messageData.final) {
-              sendMessage(data, "file");
+              // setTimeout(() => {
+              sendMessage(data, "file", messageId);
+
+              // }, 4000);
             }
           }
         }
@@ -266,7 +282,7 @@ function Chat() {
         final: iFrom >= file.size ? true : false,
         percentageDone: iFrom / file.size,
       };
-      fileMessages.push(obj);
+      fileMessages.current.push(obj);
       return obj;
     };
   };
