@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { fixedWidth, styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
 
+const after120Seconds = 120 * 1000;
 function ChatWindow({
   chat,
   sendMessage,
@@ -15,21 +16,51 @@ function ChatWindow({
   setShowSideBar,
   ifNewMessage,
   sendFile,
+  latestEpocTime,
 }) {
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
+  const [, setRerender] = useState(false);
+  const timeinterval = useRef(null);
+  const timeOutinterval = useRef(null);
   useEffect(() => {
     if (textRef.current && !showSideBar) {
       textRef.current.focus();
     }
   }, [showSideBar]);
+
   useEffect(() => {
     if (textRef.current) {
       textRef.current.value = "";
     }
   }, [chat]);
-  const send = () => {
+
+  useEffect(() => {
+    // timer for file validation
+    clearInterval(timeinterval.current);
+    clearTimeout(timeOutinterval.current);
+
+    if (latestEpocTime) {
+      timeinterval.current = setInterval(() => {
+        // console.log("chla");
+        setRerender((prevState) => !prevState);
+      }, 1000);
+    }
+    if (timeinterval.current) {
+      timeOutinterval.current = setTimeout(() => {
+        // console.log("interval end");
+        clearInterval(timeinterval.current);
+      }, after120Seconds);
+    }
+
+    return () => {
+      // console.log("clear time interval");
+      clearInterval(timeinterval.current);
+    };
+  }, [latestEpocTime]);
+
+  const send = useCallback(() => {
     const message = textRef.current.value;
     if (!message) {
       setResponseState({
@@ -42,7 +73,7 @@ function ChatWindow({
     const data = { message, id: chat.id, senderId };
     sendMessage(data, "text");
     textRef.current.value = "";
-  };
+  }, [chat, senderId]);
 
   if (!chat) {
     return (
@@ -119,6 +150,28 @@ function ChatWindow({
                       }
                     />
                   )}
+                  {new Date().getTime() - each.messageEpocTime <
+                  after120Seconds ? (
+                    <span
+                      style={{
+                        opacity: 0.5,
+                        fontSize: 10,
+                        marginLeft: 10,
+                        marginTop: 10,
+                        marginRight: -21,
+                        width: 80,
+                      }}
+                    >
+                      valid until{" "}
+                      {Math.round(
+                        (after120Seconds -
+                          (new Date().getTime() - each.messageEpocTime)) /
+                          1000
+                      )}
+                    </span>
+                  ) : (
+                    <></>
+                  )}
                 </>
               )}
             </SenderAndReceiver>
@@ -148,7 +201,7 @@ function ChatWindow({
             name="myfile"
             id="myfile"
             onChange={onfileSelect}
-            multiple
+            multiple={false}
           />
           <button disabled={disconnected} onClick={send}>
             Send

@@ -24,6 +24,7 @@ function Chat() {
   let socket = undefined;
   const deviceWidth = window.innerWidth;
   let fileMessages = useRef([]);
+  const latestEpocTime = useRef(undefined);
 
   const pullNewMessages = () => {
     if (!selectedChat) return;
@@ -146,6 +147,7 @@ function Chat() {
 
           if (parseMessage.final) {
             blobUrl = bufferToBlob();
+            latestEpocTime.current = new Date().getTime();
           }
         }
 
@@ -198,14 +200,15 @@ function Chat() {
         yourId: receiverId,
         typeOfMessage,
         blobUrl,
+        messageEpocTime: new Date().getTime(),
       },
     };
     return newObj;
   };
 
-  useEffect(() => {
-    sessionStorage.setItem("data", JSON.stringify(allMessages));
-  }, [allMessages]);
+  // useEffect(() => {
+  //   sessionStorage.setItem("data", JSON.stringify(allMessages));
+  // }, [allMessages]);
 
   const sendMessage = async (data, typeOfMessage, recursionMessageId) => {
     const messageId = recursionMessageId || window.crypto.randomUUID();
@@ -216,6 +219,7 @@ function Chat() {
       messageData = data.message();
       if (messageData.final) {
         data.blobUrl = bufferToBlob();
+        latestEpocTime.current = new Date().getTime();
       }
     }
 
@@ -225,19 +229,20 @@ function Chat() {
       ({ status }) => {
         if (status) {
           // const newObj = JSON.parse(JSON.stringify(allMessagesObj));
-          const sessionData = JSON.parse(sessionStorage.getItem("data"));
-          if (sessionData) allMessagesObj = sessionData; // used session storage because recursion is taking old state
-          allMessagesObj[data.id] = {
-            ...(allMessagesObj[data.id] || {}),
-            [messageId]: {
-              message: messageData,
-              myId: data.senderId,
-              yourId: data.id,
-              typeOfMessage,
-              blobUrl: data?.blobUrl,
-              messageId,
-            },
-          };
+          // const sessionData = JSON.parse(sessionStorage.getItem("data"));
+          // if (sessionData) allMessagesObj = sessionData; // used session storage because recursion is taking old state
+          // allMessagesObj[data.id] = {
+          //   ...(allMessagesObj[data.id] || {}),
+          //   [messageId]: {
+          //     message: messageData,
+          //     myId: data.senderId,
+          //     yourId: data.id,
+          //     typeOfMessage,
+          //     blobUrl: data?.blobUrl,
+          //     messageId,
+          //     messageEpocTime: new Date().getTime(),
+          //   },
+          // };
 
           // newObj[data.id][messageId] = {
           //   message: messageData,
@@ -251,14 +256,26 @@ function Chat() {
           // allMessagesObj = JSON.parse(JSON.stringify(newObj));
           // allMessagesObj = newObj;
 
-          setAllMessages({ ...allMessagesObj });
+          // setAllMessages({ ...allMessagesObj });
+          setAllMessages((prevState) => {
+            prevState[data.id] = {
+              ...(prevState[data.id] || {}),
+              [messageId]: {
+                message: messageData,
+                myId: data.senderId,
+                yourId: data.id,
+                typeOfMessage,
+                blobUrl: data?.blobUrl,
+                messageId,
+                messageEpocTime: new Date().getTime(),
+              },
+            };
+            return { ...prevState };
+          });
 
           if (typeOfMessage === "file") {
             if (!messageData.final) {
-              // setTimeout(() => {
               sendMessage(data, "file", messageId);
-
-              // }, 4000);
             }
           }
         }
@@ -377,6 +394,7 @@ function Chat() {
               setShowSideBar={setShowSideBar}
               ifNewMessage={Object.keys(newMessages).length > 0}
               sendFile={sendFile}
+              latestEpocTime={latestEpocTime.current}
             />
             {/* )} */}
           </MainDiv>
