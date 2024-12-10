@@ -8,6 +8,7 @@ import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
 
 let chunkSize = 1024;
+const after120Seconds = 120 * 1000;
 
 function Chat() {
   const [showSideBar, setShowSideBar] = useState(true);
@@ -16,7 +17,6 @@ function Chat() {
   const [allGuestUsers, setAllGuestUsers] = useState({});
   const [disconnectedGuestUsers, setDisconnectedAllGuestUsers] = useState({});
   const [allMessages, setAllMessages] = useState({});
-  let allMessagesObj = { ...allMessages };
   const [newMessages, setNewMessages] = useState({});
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ function Chat() {
     fileMessages.current = [];
     setTimeout(() => {
       URL.revokeObjectURL(link);
-    }, 300000); // link will be revoked and memory will be freed after 5 minutes
+    }, after120Seconds); // link will be revoked and memory will be freed after 2 minutes
     return link;
   };
 

@@ -51,7 +51,7 @@ function ChatWindow({
       timeOutinterval.current = setTimeout(() => {
         // console.log("interval end");
         clearInterval(timeinterval.current);
-      }, after120Seconds);
+      }, after120Seconds + 2000); // adding two more second to keep updates consistent
     }
 
     return () => {
@@ -115,66 +115,84 @@ function ChatWindow({
         {allMessages.map((each, index) => {
           if (!each.message) return;
           return (
-            <SenderAndReceiver
-              style={
-                each.myId && {
-                  marginLeft: "auto",
-                  backgroundColor: "rgb(233 233 233)",
-                  color: "#0f5783",
-                  paddingRight: each.typeOfMessage ? 12 : "auto",
+            <>
+              <SenderAndReceiver
+                style={
+                  each.myId && {
+                    marginLeft: "auto",
+                    backgroundColor: "rgb(233 233 233)",
+                    color: "#0f5783",
+                    paddingRight: each.typeOfMessage ? 12 : "auto",
+                  }
                 }
-              }
-              key={index}
-            >
-              {each.typeOfMessage === "text" && each.message}
-              {each.typeOfMessage === "file" && (
-                <>
-                  {/* {each.message?.percentageDone < 1
+                key={index}
+              >
+                {each.typeOfMessage === "text" && each.message}
+                {each.typeOfMessage === "file" && (
+                  <>
+                    {/* {each.message?.percentageDone < 1
                     ? `${each.message.name} ${Math.round(
                         each.message?.percentageDone * 100
                       )}`
                     : each.message.name} */}
-                  {each.message.name}{" "}
-                  {each.message?.percentageDone < 1 ? (
-                    <span
-                      style={{ fontSize: 14, marginLeft: 10, marginTop: 3 }}
-                    >
-                      {Math.round(each.message?.percentageDone * 100)}%
-                    </span>
-                  ) : (
-                    <DownloadIcon
-                      fontSize="12px"
-                      style={{ marginLeft: 10, marginTop: 3 }}
-                      onClick={() =>
-                        downloadFile(each.blobUrl, each.message.name)
-                      }
-                    />
-                  )}
-                  {new Date().getTime() - each.messageEpocTime <
-                  after120Seconds ? (
-                    <span
-                      style={{
-                        opacity: 0.5,
-                        fontSize: 10,
-                        marginLeft: 10,
-                        marginTop: 10,
-                        marginRight: -21,
-                        width: 80,
-                      }}
-                    >
-                      valid until{" "}
-                      {Math.round(
-                        (after120Seconds -
-                          (new Date().getTime() - each.messageEpocTime)) /
-                          1000
-                      )}
-                    </span>
-                  ) : (
-                    <></>
-                  )}
-                </>
+                    {each.message.name}{" "}
+                    {each.message?.percentageDone < 1 ? (
+                      <span
+                        style={{ fontSize: 14, marginLeft: 10, marginTop: 3 }}
+                      >
+                        {Math.round(each.message?.percentageDone * 100)}%
+                      </span>
+                    ) : (
+                      new Date().getTime() - each.messageEpocTime <
+                        after120Seconds && (
+                        <DownloadIcon
+                          fontSize="12px"
+                          style={{ marginLeft: 10, marginTop: 3 }}
+                          onClick={() =>
+                            downloadFile(each.blobUrl, each.message.name)
+                          }
+                        />
+                      )
+                    )}
+                  </>
+                )}
+              </SenderAndReceiver>
+              {each.typeOfMessage === "file" ? (
+                <SenderAndReceiverValidityDiv
+                  style={
+                    each.myId && {
+                      marginLeft: "auto",
+                      paddingRight: each.typeOfMessage ? 12 : "auto",
+                      color: "rgb(233 233 233)",
+                      backgroundColor: "rgb(12, 53, 79)",
+                    }
+                  }
+                >
+                  <span
+                    style={{
+                      opacity: 0.5,
+                      fontSize: 9,
+                    }}
+                  >
+                    {new Date().getTime() - each.messageEpocTime <
+                    after120Seconds ? (
+                      <>
+                        {"Valid until "}
+                        {Math.round(
+                          (after120Seconds -
+                            (new Date().getTime() - each.messageEpocTime)) /
+                            1000
+                        )}
+                      </>
+                    ) : (
+                      <>{"Expired"}</>
+                    )}
+                  </span>
+                </SenderAndReceiverValidityDiv>
+              ) : (
+                <></>
               )}
-            </SenderAndReceiver>
+            </>
           );
         })}
         {/* Messages will be displayed here */}
@@ -351,4 +369,11 @@ const SenderAndReceiver = styled("div", {
   "@bp1": {
     fontSize: 14,
   },
+});
+const SenderAndReceiverValidityDiv = styled(SenderAndReceiver, {
+  marginTop: "0px",
+  height: "20px",
+  padding: "0px 10px",
+  marginBottom: "4px",
+  backgroundColor: "transparent",
 });
