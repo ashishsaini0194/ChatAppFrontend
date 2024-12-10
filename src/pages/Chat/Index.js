@@ -285,7 +285,7 @@ function Chat() {
 
   const getChunk = (file) => {
     const InKB = file.size / chunkSize;
-    if (InKB > 1000) chunkSize = file.size / 1000; //changing chunk size if the file is too big, so that maximum number of chunks will be 1000
+    if (InKB > 100) chunkSize = file.size / 100; //changing chunk size if the file is too big, so that maximum number of chunks will be 100
     let iFrom = 0;
 
     return () => {
