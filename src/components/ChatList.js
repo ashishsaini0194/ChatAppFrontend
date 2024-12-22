@@ -17,7 +17,7 @@ function ChatList({
   const deviceWidth = window.innerWidth;
   // console.log({ newMessages });
   return (
-    <ChatListDiv style={{ overflowY: "auto" }}>
+    <ChatListDiv>
       <ChatListItem
         style={{
           backgroundColor: theme.colors.darkBlue,
@@ -56,7 +56,9 @@ function ChatList({
       >
         Chats
       </Typography>
-      <ChatListDiv style={{ height: "88%", overflowY: "auto", width: "100%" }}>
+      <ChatListDiv
+        style={{ height: "82% !important", width: "100%", overflowY: "auto" }}
+      >
         {chats.map((chat) => (
           <ChatListItem
             key={chat.id}
@@ -118,10 +120,12 @@ const ChatListDiv = styled("div", {
   borderRight: "1px solid #ddd",
   boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
   overflowX: "hidden",
+  overflowY: "auto",
   minWidth: "280px",
   height: "100%",
   "@bp1": {
     width: "100%",
+    overflowY: "hidden",
     // position: "absolute",
   },
 });
@@ -158,6 +162,10 @@ const ChatListItemAvatar = styled("div", {
   marginRight: 15,
   fontWeight: "bold",
   fontSize: 20,
+  "@bp1": {
+    width: 44,
+    height: 45,
+  },
 });
 
 const ChatListItemDetails = styled("div", {
@@ -166,10 +174,16 @@ const ChatListItemDetails = styled("div", {
     margin: 0,
     fontSize: 16,
     fontWeight: 600,
+    "@bp1": {
+      fontSize: 14,
+    },
   },
   p: {
     margin: "5px 0 0",
     color: "#888",
     fontSize: 14,
+    "@bp1": {
+      fontSize: 12,
+    },
   },
 });

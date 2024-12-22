@@ -363,7 +363,7 @@ function Chat() {
                 style={{
                   transform: showSideBar
                     ? deviceWidth <= fixedWidth
-                      ? "translateX(-5%)"
+                      ? "translateX(-4%)"
                       : "none"
                     : "translateX(-105%)",
                 }}
@@ -434,7 +434,7 @@ const StyledContainer = styled(Container, {
 
 const ChatListParent = styled("div", {
   "@bp1": {
-    width: "100%",
+    width: "96%",
     transition: "transform 0.3s ease-in-out",
     zIndex: 1,
   },

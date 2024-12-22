@@ -272,8 +272,9 @@ const ChatWindowDiv = styled("div", {
     flex: "auto",
     borderLeft: "none",
     position: "fixed",
-    height: "100%",
+    height: "97%",
     width: "92%",
+    marginTop: "9px",
   },
 });
 
