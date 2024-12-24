@@ -6,6 +6,7 @@ import ChatWindow from "../../components/ChatWindow";
 import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
+import { getSwipe } from "../../utils/SwipeTouch";
 
 let chunkSize = 1024;
 const after120Seconds = 120 * 1000;
@@ -25,6 +26,7 @@ function Chat() {
   const deviceWidth = window.innerWidth;
   let fileMessages = useRef([]);
   const latestEpocTime = useRef(undefined);
+  const swipableElement = useRef();
 
   const pullNewMessages = () => {
     if (!selectedChat) return;
@@ -77,6 +79,16 @@ function Chat() {
       //   // console.log("socketId ", socket.id);
       // });
     }, 0);
+
+    getSwipe(
+      () => {
+        setShowSideBar(true);
+      },
+      () => {
+        setShowSideBar(false);
+      },
+      swipableElement
+    );
 
     // return () => {
     //   if (socket) socket.disconnect();
@@ -350,7 +362,7 @@ function Chat() {
         <WaitingOtherUsers>Waiting for other users...</WaitingOtherUsers>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <StyledContainer>
+      <StyledContainer ref={swipableElement}>
         <div
           style={{
             height: "100vh",
@@ -360,13 +372,15 @@ function Chat() {
           <MainDiv>
             {
               <ChatListParent
-                style={{
-                  transform: showSideBar
-                    ? deviceWidth <= fixedWidth
-                      ? "translateX(-4%)"
-                      : "none"
-                    : "translateX(-105%)",
-                }}
+                style={
+                  deviceWidth <= fixedWidth
+                    ? {
+                        transform: showSideBar
+                          ? "translateX(-4%)"
+                          : "translateX(-105%)",
+                      }
+                    : {}
+                }
               >
                 <ChatList
                   myDetails={myDetails}
