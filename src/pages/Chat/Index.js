@@ -410,7 +410,6 @@ function Chat() {
               sendFile={sendFile}
               latestEpocTime={latestEpocTime.current}
             />
-            {/* )} */}
           </MainDiv>
         </div>
       </StyledContainer>

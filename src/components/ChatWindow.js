@@ -99,7 +99,11 @@ function ChatWindow({
   return (
     <ChatWindowDiv>
       <ChatWindowHeader style={{ position: "relative" }}>
-        <h2>{chat.name}</h2>
+        <h2 style={{ display: "flex" }}>
+          {chat.name}
+          <> {!disconnected ? <ActiveCircle /> : <DeactiveCircle />}</>
+        </h2>
+
         <MobileVisibility onClick={() => setShowSideBar(true)}>
           <MenuIcon />
         </MobileVisibility>
@@ -251,6 +255,12 @@ const RedCircle = styled("span", {
   backgroundColor: "#f15858",
   display: "block",
 });
+
+const ActiveCircle = styled(RedCircle, {
+  backgroundColor: "Green",
+  marginLeft: "5px",
+});
+const DeactiveCircle = styled(RedCircle, { marginLeft: "5px" });
 
 const MobileVisibility = styled("div", {
   "@bp1": {
