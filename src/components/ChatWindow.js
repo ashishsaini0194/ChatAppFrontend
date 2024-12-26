@@ -141,7 +141,12 @@ function ChatWindow({
                     {each.message.name}{" "}
                     {each.message?.percentageDone < 1 ? (
                       <span
-                        style={{ fontSize: 14, marginLeft: 10, marginTop: 3 }}
+                        style={{
+                          fontSize: 14,
+                          marginLeft: 10,
+                          marginTop: 3,
+                          whiteSpace: "nowrap",
+                        }}
                       >
                         {Math.round(each.message?.percentageDone * 100)}%
                       </span>
@@ -304,6 +309,8 @@ const ChatWindowHeader = styled("div", {
     fontWeight: 600,
   },
   "@bp1": {
+    position: "sticky",
+    bottom: 0,
     h2: {
       fontSize: 15,
     },

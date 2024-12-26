@@ -371,30 +371,28 @@ function Chat() {
         >
           {/* <Sidebar /> */}
           <MainDiv>
-            {
-              <ChatListParent
-                style={
-                  deviceWidth <= fixedWidth
-                    ? {
-                        transform: showSideBar
-                          ? "translateX(-4%)"
-                          : "translateX(-105%)",
-                      }
-                    : {}
-                }
-              >
-                <ChatList
-                  myDetails={myDetails}
-                  chats={Object.values(allGuestUsers)}
-                  disconnectedGuestUsers={disconnectedGuestUsers}
-                  selectedChat={selectedChat}
-                  onSelectChat={setSelectedChat}
-                  newMessages={newMessages}
-                  setShowSideBar={setShowSideBar}
-                />
-              </ChatListParent>
-            }
-            {/* {(!showSideBar || deviceWidth > fixedWidth) && ( */}
+            <ChatListParent
+              style={
+                deviceWidth <= fixedWidth
+                  ? {
+                      transform: showSideBar
+                        ? "translateX(-4%)"
+                        : "translateX(-105%)",
+                    }
+                  : {}
+              }
+            >
+              <ChatList
+                myDetails={myDetails}
+                chats={Object.values(allGuestUsers)}
+                disconnectedGuestUsers={disconnectedGuestUsers}
+                selectedChat={selectedChat}
+                onSelectChat={setSelectedChat}
+                newMessages={newMessages}
+                setShowSideBar={setShowSideBar}
+              />
+            </ChatListParent>
+
             <ChatWindow
               sendMessage={sendMessage}
               chat={selectedChat}
@@ -425,6 +423,7 @@ const MainDiv = styled("div", {
   flexSirection: "row",
   width: "100%",
   height: "100%",
+  position: "relative",
 });
 
 const opacityTransition = keyframes({
