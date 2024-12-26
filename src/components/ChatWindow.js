@@ -119,7 +119,7 @@ function ChatWindow({
         {allMessages.map((each, index) => {
           if (!each.message) return;
           return (
-            <>
+            <React.Fragment key={index}>
               <SenderAndReceiver
                 style={
                   each.myId && {
@@ -129,7 +129,6 @@ function ChatWindow({
                     paddingRight: each.typeOfMessage ? 12 : "auto",
                   }
                 }
-                key={index}
               >
                 {each.typeOfMessage === "text" && each.message}
                 {each.typeOfMessage === "file" && (
@@ -196,7 +195,7 @@ function ChatWindow({
               ) : (
                 <></>
               )}
-            </>
+            </React.Fragment>
           );
         })}
         {/* Messages will be displayed here */}
@@ -260,7 +259,10 @@ const ActiveCircle = styled(RedCircle, {
   backgroundColor: "Green",
   marginLeft: "5px",
 });
-const DeactiveCircle = styled(RedCircle, { marginLeft: "5px" });
+const DeactiveCircle = styled(RedCircle, {
+  marginLeft: "5px",
+  backgroundColor: "#d93a3a",
+});
 
 const MobileVisibility = styled("div", {
   "@bp1": {

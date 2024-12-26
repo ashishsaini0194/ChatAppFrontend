@@ -7,6 +7,7 @@ import { CircularProgress, Container, Backdrop } from "@mui/material";
 import { styled, keyframes, fixedWidth } from "../../stichesConfig";
 import { showNotification } from "../../components/PushNotification";
 import { getSwipe } from "../../utils/SwipeTouch";
+import { v4 as uuidv4 } from "uuid";
 
 let chunkSize = 1024;
 const after120Seconds = 120 * 1000;
@@ -223,7 +224,7 @@ function Chat() {
   // }, [allMessages]);
 
   const sendMessage = async (data, typeOfMessage, recursionMessageId) => {
-    const messageId = recursionMessageId || window.crypto.randomUUID();
+    const messageId = recursionMessageId || uuidv4();
     // console.log(data, typeOfMessage, messageId);
 
     let messageData = data.message;

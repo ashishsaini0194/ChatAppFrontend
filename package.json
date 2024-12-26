@@ -19,10 +19,11 @@
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.7.5",
+    "uuid": "^11.0.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "set port=3001 && react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
