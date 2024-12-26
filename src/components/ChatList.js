@@ -56,9 +56,7 @@ function ChatList({
       >
         Chats
       </Typography>
-      <ChatListDiv
-        style={{ height: "82% !important", width: "100%", overflowY: "auto" }}
-      >
+      <ChatListDiv style={{ height: "82%", width: "100%", overflowY: "auto" }}>
         {chats.map((chat) => (
           <ChatListItem
             key={chat.id}

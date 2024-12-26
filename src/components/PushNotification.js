@@ -7,8 +7,12 @@ export const showNotification = ({
     body: message,
     icon: imageUrl,
   };
-  const notification = new Notification(title, options);
-  setTimeout(() => {
-    notification.close();
-  }, 3000);
+  try {
+    const notification = new Notification(title, options);
+    setTimeout(() => {
+      notification.close();
+    }, 3000);
+  } catch (e) {
+    console.log("Notification Api not supported!", e);
+  }
 };
