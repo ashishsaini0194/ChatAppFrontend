@@ -4,6 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 const after120Seconds = 120 * 1000;
 function ChatWindow({
@@ -153,13 +154,30 @@ function ChatWindow({
                     ) : (
                       new Date().getTime() - each.messageEpocTime <
                         after120Seconds && (
-                        <DownloadIcon
-                          fontSize="12px"
-                          style={{ marginLeft: 10, marginTop: 3 }}
-                          onClick={() =>
-                            downloadFile(each.blobUrl, each.message.name)
-                          }
-                        />
+                        <>
+                          <DownloadIcon
+                            fontSize="12px"
+                            style={{
+                              marginLeft: 10,
+                              marginTop: 3,
+                              cursor: "pointer",
+                            }}
+                            titleAccess="Download"
+                            onClick={() =>
+                              downloadFile(each.blobUrl, each.message.name)
+                            }
+                          />
+                          <OpenInNewIcon
+                            fontSize="12px"
+                            titleAccess="Preview"
+                            style={{
+                              marginLeft: 5,
+                              marginTop: 3,
+                              cursor: "pointer",
+                            }}
+                            onClick={() => window.open(each.blobUrl)}
+                          />
+                        </>
                       )
                     )}
                   </>
