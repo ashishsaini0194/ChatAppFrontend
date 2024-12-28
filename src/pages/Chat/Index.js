@@ -20,12 +20,12 @@ function Chat() {
   const [disconnectedGuestUsers, setDisconnectedAllGuestUsers] = useState({});
   const [allMessages, setAllMessages] = useState({});
   const [newMessages, setNewMessages] = useState({});
-  const [loader, setLoader] = useState(true);
+  // const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
   const [documentSocket, setDocumentSocket] = useState(true);
   let socket = undefined;
   const deviceWidth = window.innerWidth;
-  let fileMessages = useRef([]);
+  let fileMessages = useRef({});
   const latestEpocTime = useRef(undefined);
   const swipableElement = useRef();
 
@@ -64,7 +64,7 @@ function Chat() {
     });
     if (!checkLogin()) return;
     setTimeout(() => {
-      if (!socket && document.socket == undefined) {
+      if (!socket && document.socket === undefined) {
         socket = io(process.env.REACT_APP_BACKEND_URL, {
           reconnection: true, // Enable reconnection
           reconnectionAttempts: 5, // Number of reconnection attempts
@@ -90,28 +90,30 @@ function Chat() {
       },
       swipableElement
     );
-
-    // return () => {
-    //   if (socket) socket.disconnect();
-    // };
   }, []);
 
-  const bufferToBlob = () => {
-    const buffers = [];
-    fileMessages.current.forEach((eachBuffer) => {
-      buffers.push(
-        eachBuffer.singleChunk.data
-          ? new Uint8Array(eachBuffer.singleChunk.data) // for reciever buffer data
-          : eachBuffer.singleChunk // for sender blob data
-      );
-    });
-    const blobData = new Blob(buffers, { type: fileMessages.current[0].type });
-    const link = URL.createObjectURL(blobData);
-    fileMessages.current = [];
-    setTimeout(() => {
-      URL.revokeObjectURL(link);
-    }, after120Seconds); // link will be revoked and memory will be freed after 2 minutes
-    return link;
+  const bufferToBlob = (filename) => {
+    try {
+      const buffers = [];
+      fileMessages.current[filename].forEach((eachBuffer) => {
+        buffers.push(
+          eachBuffer.singleChunk.data
+            ? new Uint8Array(eachBuffer.singleChunk.data) // for reciever buffer data
+            : eachBuffer.singleChunk // for sender blob data
+        );
+      });
+      const blobData = new Blob(buffers, {
+        type: fileMessages.current[filename][0].type,
+      });
+      const link = URL.createObjectURL(blobData);
+      fileMessages.current[filename] = [];
+      setTimeout(() => {
+        URL.revokeObjectURL(link);
+      }, after120Seconds); // link will be revoked and memory will be freed after 2 minutes
+      return link;
+    } catch (e) {
+      return "";
+    }
   };
 
   if (document.socket) {
@@ -153,13 +155,16 @@ function Chat() {
         let blobUrl = undefined;
         if (type === "file") {
           parseMessage = JSON.parse(message);
-          if (parseMessage.type != fileMessages.current[0]?.type) {
-            fileMessages.current = []; // resest chunk if file type differs from previous chunks
+
+          //saving format {filename:[obj,obj, ..so on]}
+          if (fileMessages.current?.[parseMessage.name]) {
+            fileMessages.current[parseMessage.name].push(parseMessage);
+          } else {
+            fileMessages.current[parseMessage.name] = [parseMessage];
           }
-          fileMessages.current.push(parseMessage);
 
           if (parseMessage.final) {
-            blobUrl = bufferToBlob();
+            blobUrl = bufferToBlob(parseMessage.name);
             latestEpocTime.current = new Date().getTime();
           }
         }
@@ -231,7 +236,7 @@ function Chat() {
     if (typeOfMessage === "file") {
       messageData = data.message();
       if (messageData.final) {
-        data.blobUrl = bufferToBlob();
+        data.blobUrl = bufferToBlob(messageData.name);
         latestEpocTime.current = new Date().getTime();
       }
     }
@@ -312,7 +317,14 @@ function Chat() {
         final: iFrom >= file.size ? true : false,
         percentageDone: iFrom / file.size,
       };
-      fileMessages.current.push(obj);
+
+      //saving format {filename:[obj,obj, ..so on]}
+      if (fileMessages.current?.[file.name]) {
+        fileMessages.current[file.name].push(obj);
+      } else {
+        fileMessages.current[file.name] = [obj];
+      }
+
       return obj;
     };
   };
@@ -323,7 +335,7 @@ function Chat() {
 
   const sendFile = (data) => {
     const files = data.file;
-    for (var a of files) {
+    for (let a of files) {
       const chunkFunc = getChunk(a);
       sendHere(chunkFunc, data.id, data.senderId);
     }

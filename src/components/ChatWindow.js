@@ -245,7 +245,7 @@ function ChatWindow({
             name="myfile"
             id="myfile"
             onChange={onfileSelect}
-            multiple={false}
+            multiple={true}
           />
           <button disabled={disconnected} onClick={send}>
             Send
