@@ -5,6 +5,7 @@ import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ReactPlayer from "react-player";
 
 const after120Seconds = 120 * 1000;
 function ChatWindow({
@@ -19,6 +20,7 @@ function ChatWindow({
   sendFile,
   latestEpocTime,
 }) {
+  // console.log(allMessages);
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
@@ -127,7 +129,7 @@ function ChatWindow({
                     marginLeft: "auto",
                     backgroundColor: "rgb(233 233 233)",
                     color: "#0f5783",
-                    paddingRight: each.typeOfMessage ? 12 : "auto",
+                    // paddingRight: each.typeOfMessage ? 12 : "auto",
                   }
                 }
               >
@@ -139,47 +141,74 @@ function ChatWindow({
                         each.message?.percentageDone * 100
                       )}`
                     : each.message.name} */}
-                    {each.message.name}{" "}
-                    {each.message?.percentageDone < 1 ? (
-                      <span
-                        style={{
-                          fontSize: 14,
-                          marginLeft: 10,
-                          marginTop: 3,
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {Math.round(each.message?.percentageDone * 100)}%
-                      </span>
-                    ) : (
-                      new Date().getTime() - each.messageEpocTime <
-                        after120Seconds && (
-                        <>
-                          <DownloadIcon
-                            fontSize="12px"
-                            style={{
-                              marginLeft: 10,
-                              marginTop: 3,
-                              cursor: "pointer",
-                            }}
-                            titleAccess="Download"
-                            onClick={() =>
-                              downloadFile(each.blobUrl, each.message.name)
-                            }
+                    <div>
+                      {each?.message.type.includes("image") ? (
+                        <PreviewImage
+                          src={each.blobUrl}
+                          type={each.message.type}
+                        />
+                      ) : each?.message.type.includes("video") ? (
+                        <PreviewVideo>
+                          <ReactPlayer
+                            url={each.blobUrl}
+                            controls={true}
+                            width="100%"
+                            height="100%"
                           />
-                          <OpenInNewIcon
-                            fontSize="12px"
-                            titleAccess="Preview"
-                            style={{
-                              marginLeft: 5,
-                              marginTop: 3,
-                              cursor: "pointer",
-                            }}
-                            onClick={() => window.open(each.blobUrl)}
-                          />
-                        </>
-                      )
-                    )}
+                        </PreviewVideo>
+                      ) : each?.message.type.includes("audio") ? (
+                        <PreviewAudio
+                          controls
+                          src={each.blobUrl}
+                          type={each.message.type}
+                        />
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                    <div style={{ display: "flex" }}>
+                      {each.message.name}{" "}
+                      {each.message?.percentageDone < 1 ? (
+                        <span
+                          style={{
+                            fontSize: 14,
+                            marginLeft: 10,
+                            marginTop: 3,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {Math.round(each.message?.percentageDone * 100)}%
+                        </span>
+                      ) : (
+                        new Date().getTime() - each.messageEpocTime <
+                          after120Seconds && (
+                          <>
+                            <DownloadIcon
+                              fontSize="12px"
+                              style={{
+                                marginLeft: 10,
+                                marginTop: 3,
+                                cursor: "pointer",
+                              }}
+                              titleAccess="Download"
+                              onClick={() =>
+                                downloadFile(each.blobUrl, each.message.name)
+                              }
+                            />
+                            <OpenInNewIcon
+                              fontSize="12px"
+                              titleAccess="Preview"
+                              style={{
+                                marginLeft: 5,
+                                marginTop: 3,
+                                cursor: "pointer",
+                              }}
+                              onClick={() => window.open(each.blobUrl)}
+                            />
+                          </>
+                        )
+                      )}
+                    </div>
                   </>
                 )}
               </SenderAndReceiver>
@@ -394,16 +423,19 @@ const ChatWindowInput = styled("div", {
 
 const SenderAndReceiver = styled("div", {
   backgroundColor: "rgb(12 53 79)",
-  maxWidth: "50%",
+  maxWidth: "70%",
   textAlign: "start",
   bordeRadius: 15,
-  padding: "6px 19px",
+  // padding: "6px 19px",
+  padding: "6px 10px",
   color: "white",
   display: "flex",
   alignItems: "center",
   margin: "1px 0px",
   fontWeight: 600,
   wordBreak: "break-word",
+  display: "flex",
+  flexDirection: "column",
   "@bp1": {
     fontSize: 14,
   },
@@ -414,4 +446,15 @@ const SenderAndReceiverValidityDiv = styled(SenderAndReceiver, {
   padding: "0px 10px",
   marginBottom: "4px",
   backgroundColor: "transparent",
+});
+
+const Preview = { maxWidth: 200, maxHeight: 200, objectFit: "cover" };
+const PreviewImage = styled("img", {
+  ...Preview,
+});
+const PreviewVideo = styled("div", {
+  ...Preview,
+});
+const PreviewAudio = styled("audio", {
+  ...Preview,
 });
