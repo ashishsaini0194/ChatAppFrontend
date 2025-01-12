@@ -107,9 +107,9 @@ function Chat() {
       });
       const link = URL.createObjectURL(blobData);
       fileMessages.current[filename] = [];
-      setTimeout(() => {
-        URL.revokeObjectURL(link);
-      }, after120Seconds); // link will be revoked and memory will be freed after 2 minutes
+      // setTimeout(() => {
+      //   URL.revokeObjectURL(link);
+      // }, after120Seconds); // link will be revoked and memory will be freed after 2 minutes
       return link;
     } catch (e) {
       return "";

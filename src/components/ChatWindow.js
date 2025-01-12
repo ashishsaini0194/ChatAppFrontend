@@ -24,9 +24,9 @@ function ChatWindow({
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
-  const [, setRerender] = useState(false);
-  const timeinterval = useRef(null);
-  const timeOutinterval = useRef(null);
+  // const [, setRerender] = useState(false);
+  // const timeinterval = useRef(null);
+  // const timeOutinterval = useRef(null);
   useEffect(() => {
     if (textRef.current && !showSideBar) {
       textRef.current.focus();
@@ -39,29 +39,29 @@ function ChatWindow({
     }
   }, [chat]);
 
-  useEffect(() => {
-    // timer for file validation
-    clearInterval(timeinterval.current);
-    clearTimeout(timeOutinterval.current);
+  // useEffect(() => {
+  //   // timer for file validation
+  //   clearInterval(timeinterval.current);
+  //   clearTimeout(timeOutinterval.current);
 
-    if (latestEpocTime) {
-      timeinterval.current = setInterval(() => {
-        // console.log("chla");
-        setRerender((prevState) => !prevState);
-      }, 1000);
-    }
-    if (timeinterval.current) {
-      timeOutinterval.current = setTimeout(() => {
-        // console.log("interval end");
-        clearInterval(timeinterval.current);
-      }, after120Seconds + 2000); // adding two more second to keep updates consistent
-    }
+  //   if (latestEpocTime) {
+  //     timeinterval.current = setInterval(() => {
+  //       // console.log("chla");
+  //       setRerender((prevState) => !prevState);
+  //     }, 1000);
+  //   }
+  //   if (timeinterval.current) {
+  //     timeOutinterval.current = setTimeout(() => {
+  //       // console.log("interval end");
+  //       clearInterval(timeinterval.current);
+  //     }, after120Seconds + 2000); // adding two more second to keep updates consistent
+  //   }
 
-    return () => {
-      // console.log("clear time interval");
-      clearInterval(timeinterval.current);
-    };
-  }, [latestEpocTime]);
+  //   return () => {
+  //     // console.log("clear time interval");
+  //     clearInterval(timeinterval.current);
+  //   };
+  // }, [latestEpocTime]);
 
   const send = useCallback(() => {
     const message = textRef.current.value;
@@ -134,6 +134,7 @@ function ChatWindow({
                 }
               >
                 {each.typeOfMessage === "text" && each.message}
+
                 {each.typeOfMessage === "file" && (
                   <>
                     {/* {each.message?.percentageDone < 1
@@ -142,32 +143,43 @@ function ChatWindow({
                       )}`
                     : each.message.name} */}
                     <div>
-                      {each?.message.type.includes("image") ? (
-                        <PreviewImage
-                          src={each.blobUrl}
-                          type={each.message.type}
-                        />
-                      ) : each?.message.type.includes("video") ? (
-                        <PreviewVideo>
-                          <ReactPlayer
-                            url={each.blobUrl}
-                            controls={true}
-                            width="200px"
-                            height="200px"
+                      {each.message?.percentageDone >= 1 &&
+                        (each?.message.type.includes("image") ? (
+                          <PreviewImage
+                            src={each.blobUrl}
+                            type={each.message.type}
                           />
-                        </PreviewVideo>
-                      ) : each?.message.type.includes("audio") ? (
-                        <PreviewAudio
-                          controls
-                          src={each.blobUrl}
-                          type={each.message.type}
-                        />
-                      ) : (
-                        <></>
-                      )}
+                        ) : each?.message.type.includes("video") ? (
+                          <PreviewVideo>
+                            <ReactPlayer
+                              url={each.blobUrl}
+                              controls={true}
+                              width="200px"
+                              height="200px"
+                            />
+                          </PreviewVideo>
+                        ) : each?.message.type.includes("audio") ? (
+                          <PreviewAudio
+                            controls
+                            src={each.blobUrl}
+                            type={each.message.type}
+                          />
+                        ) : (
+                          <></>
+                        ))}
                     </div>
                     <div style={{ display: "flex" }}>
-                      {each.message.name}{" "}
+                      <span
+                        style={{
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          width: 175,
+                        }}
+                      >
+                        {" "}
+                        {each.message.name}
+                      </span>{" "}
                       {each.message?.percentageDone < 1 ? (
                         <span
                           style={{
@@ -180,39 +192,38 @@ function ChatWindow({
                           {Math.round(each.message?.percentageDone * 100)}%
                         </span>
                       ) : (
-                        new Date().getTime() - each.messageEpocTime <
-                          after120Seconds && (
-                          <>
-                            <DownloadIcon
-                              fontSize="12px"
-                              style={{
-                                marginLeft: 10,
-                                marginTop: 3,
-                                cursor: "pointer",
-                              }}
-                              titleAccess="Download"
-                              onClick={() =>
-                                downloadFile(each.blobUrl, each.message.name)
-                              }
-                            />
-                            <OpenInNewIcon
-                              fontSize="12px"
-                              titleAccess="Preview"
-                              style={{
-                                marginLeft: 5,
-                                marginTop: 3,
-                                cursor: "pointer",
-                              }}
-                              onClick={() => window.open(each.blobUrl)}
-                            />
-                          </>
-                        )
+                        // new Date().getTime() - each.messageEpocTime <
+                        //   after120Seconds &&
+                        <>
+                          <DownloadIcon
+                            fontSize="12px"
+                            style={{
+                              marginLeft: 10,
+                              marginTop: 3,
+                              cursor: "pointer",
+                            }}
+                            titleAccess="Download"
+                            onClick={() =>
+                              downloadFile(each.blobUrl, each.message.name)
+                            }
+                          />
+                          <OpenInNewIcon
+                            fontSize="12px"
+                            titleAccess="Preview"
+                            style={{
+                              marginLeft: 5,
+                              marginTop: 3,
+                              cursor: "pointer",
+                            }}
+                            onClick={() => window.open(each.blobUrl)}
+                          />
+                        </>
                       )}
                     </div>
                   </>
                 )}
               </SenderAndReceiver>
-              {each.typeOfMessage === "file" ? (
+              {/* {each.typeOfMessage === "file" ? (
                 <SenderAndReceiverValidityDiv
                   style={
                     each.myId && {
@@ -246,7 +257,7 @@ function ChatWindow({
                 </SenderAndReceiverValidityDiv>
               ) : (
                 <></>
-              )}
+              )} */}
             </React.Fragment>
           );
         })}
