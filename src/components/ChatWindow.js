@@ -150,15 +150,14 @@ function ChatWindow({
                             type={each.message.type}
                           />
                         ) : each?.message.type.includes("video") ? (
-                          <PreviewVideo>
-                            <ReactPlayer
-                              url={each.blobUrl}
-                              controls={true}
-                              width="200px"
-                              height="200px"
-                            />
-                          </PreviewVideo>
-                        ) : each?.message.type.includes("audio") ? (
+                          // <PreviewVideo>
+                          <PreviewVideo
+                            // style={{ ...Preview }}
+                            url={each.blobUrl}
+                            controls={true}
+                          />
+                        ) : // </PreviewVideo>
+                        each?.message.type.includes("audio") ? (
                           <PreviewAudio
                             controls
                             src={each.blobUrl}
@@ -459,11 +458,19 @@ const SenderAndReceiverValidityDiv = styled(SenderAndReceiver, {
   backgroundColor: "transparent",
 });
 
-const Preview = { maxWidth: 200, maxHeight: 200, objectFit: "cover" };
+const Preview = {
+  maxWidth: 500,
+  maxHeight: 500,
+  objectFit: "cover",
+  "@bp1": {
+    maxWidth: 200,
+    maxHeight: 200,
+  },
+};
 const PreviewImage = styled("img", {
   ...Preview,
 });
-const PreviewVideo = styled("div", {
+const PreviewVideo = styled(ReactPlayer, {
   ...Preview,
 });
 const PreviewAudio = styled("audio", {
