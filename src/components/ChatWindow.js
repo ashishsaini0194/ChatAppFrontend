@@ -133,7 +133,17 @@ function ChatWindow({
                   }
                 }
               >
-                {each.typeOfMessage === "text" && each.message}
+                {each.typeOfMessage === "text" && (
+                  <pre
+                    style={{
+                      width: "100%",
+                      margin: 0,
+                      whiteSpace: "break-spaces",
+                    }}
+                  >
+                    {each.message}
+                  </pre>
+                )}
 
                 {each.typeOfMessage === "file" && (
                   <>
@@ -264,10 +274,10 @@ function ChatWindow({
       </ChatWindowMessages>
       {!disconnected && (
         <ChatWindowInput>
-          <input
+          <InputBox
             disabled={disconnected}
             onKeyUp={(e) => {
-              e.key === "Enter" && send();
+              if (e.ctrlKey && e.key === "Enter") send();
             }}
             ref={textRef}
             type="text"
@@ -308,6 +318,14 @@ function ChatWindow({
 }
 
 export default ChatWindow;
+
+const InputBox = styled("textarea", {
+  width: "100%",
+  borderRadius: 5,
+  outline: "none",
+  border: "none",
+  resize: "none",
+});
 
 const RedCircle = styled("span", {
   width: 8,
