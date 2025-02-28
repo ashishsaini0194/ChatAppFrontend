@@ -277,7 +277,9 @@ function ChatWindow({
           <InputBox
             disabled={disconnected}
             onKeyUp={(e) => {
-              if (e.ctrlKey && e.key === "Enter") send();
+              if (e.ctrlKey && e.key === "Enter") {
+                textRef.current.value += "\n";
+              } else if (e.key === "Enter") send();
             }}
             ref={textRef}
             type="text"
