@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { fixedWidth, styled, theme } from "../stichesConfig";
+import { fixedWidth, keyframes, styled, theme } from "../stichesConfig";
 import MenuIcon from "@mui/icons-material/Menu";
 import { ErrorResponseComp, validTypes } from "./ErrorResponseComp";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactPlayer from "react-player";
+import { AudioController } from "../utils/AudioRecorder";
+import MicIcon from "@mui/icons-material/Mic";
 
 const after120Seconds = 120 * 1000;
 function ChatWindow({
@@ -24,6 +26,7 @@ function ChatWindow({
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
+  const [micAcc, setMicAcc] = useState(false);
   // const [, setRerender] = useState(false);
   // const timeinterval = useRef(null);
   // const timeOutinterval = useRef(null);
@@ -38,6 +41,27 @@ function ChatWindow({
       textRef.current.value = "";
     }
   }, [chat]);
+  let mediaRecorder = useRef(document.mediaRecorder);
+  useEffect(() => {
+    const func = (e) => {
+      sendFile({
+        file: [new File([e.data], "", { type: "audio/webm" })],
+        id: chat.id,
+        senderId,
+      });
+    };
+    (async () => {
+      document.mediaRecorder = await AudioController();
+      mediaRecorder.current = document.mediaRecorder;
+      if (!chat || !senderId || !mediaRecorder.current) return;
+      mediaRecorder.current.addEventListener("dataavailable", func);
+      setMicAcc(true);
+    })();
+    return () => {
+      if (mediaRecorder.current)
+        mediaRecorder.current.removeEventListener("dataavailable", func);
+    };
+  }, [chat, senderId]);
 
   // useEffect(() => {
   //   // timer for file validation
@@ -285,6 +309,15 @@ function ChatWindow({
             type="text"
             placeholder="Type a message..."
           />
+          <MicIconComp
+            onMouseDown={() => {
+              if (mediaRecorder.current) mediaRecorder.current.start();
+            }}
+            onMouseUp={() => {
+              if (mediaRecorder.current) mediaRecorder.current.stop();
+            }}
+            fontSize="16px"
+          />
 
           <label htmlFor="myfile">
             {/* for attribute work fine with label only */}
@@ -320,6 +353,26 @@ function ChatWindow({
 }
 
 export default ChatWindow;
+const opacityTransition = keyframes({
+  "0%": { opacity: 0.2 },
+  "50%": { opacity: 0.8 },
+  "100%": { opacity: 0.2 },
+});
+const MicIconComp = styled(MicIcon, {
+  position: "absolute",
+  right: 114,
+  cursor: "pointer",
+
+  "&:active": {
+    color: "Blue",
+    scale: "1.7",
+    animation: `${opacityTransition} 2s infinite`,
+  },
+
+  "@bp1": {
+    right: 100,
+  },
+});
 
 const InputBox = styled("textarea", {
   width: "100%",
@@ -429,7 +482,7 @@ const ChatWindowInput = styled("div", {
     },
   },
   button: {
-    marginLeft: 10,
+    // marginLeft: 10,
     border: "none",
     backgroundColor: "white",
     color: "rgb(4 43 73)",
