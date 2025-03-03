@@ -341,15 +341,17 @@ function ChatWindow({
             </>
           )}
 
-          <MicIconComp
-            onPointerUp={() => {
-              micHold(() => mediaRecorder.current.stop());
-            }}
-            onPointerDown={() => {
-              micHold(() => mediaRecorder.current.start());
-            }}
-            fontSize="16px"
-          />
+          <MicDiv>
+            <MicIconComp
+              onPointerUp={() => {
+                micHold(() => mediaRecorder.current.stop());
+              }}
+              onPointerDown={() => {
+                micHold(() => mediaRecorder.current.start());
+              }}
+              fontSize="16px"
+            />
+          </MicDiv>
           {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
@@ -373,10 +375,10 @@ export default ChatWindow;
 const AttachFileIconComp = styled(AttachFileIcon, {
   marginRight: "5px",
   position: "absolute",
-  right: "30px",
-  bottom: "21px",
+  right: "54px",
+  bottom: "24px",
   "@bp3": {
-    right: "46px",
+    right: "72px",
     cursor: "pointer",
   },
 });
@@ -385,10 +387,10 @@ const SendIconComp = styled(SendIcon, {
   // color: "white",
   fontSize: "26px",
   position: "absolute",
-  right: "30px",
+  right: "54px",
 
   "@bp3": {
-    right: "46px",
+    right: "72px",
     cursor: "pointer",
   },
 });
@@ -397,20 +399,30 @@ const opacityTransition = keyframes({
   "50%": { opacity: 0.8 },
   "100%": { opacity: 0.2 },
 });
-const MicIconComp = styled(MicIcon, {
-  cursor: "pointer",
-  color: "white",
-  fontSize: 26,
-
+const MicDiv = styled("div", {
+  backgroundColor: "White",
+  borderRadius: "50%",
+  width: 46,
+  height: 38,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 3,
+  marginRight: 5,
   "&:active": {
-    color: "#92d6ec",
-    scale: "2",
+    backgroundColor: "#92d6ec",
+    scale: "1.5",
     animation: `${opacityTransition} 2s infinite`,
   },
-
   "@bp1": {
     right: 100,
+    width: 56,
   },
+});
+const MicIconComp = styled(MicIcon, {
+  cursor: "pointer",
+  color: "black",
+  fontSize: 26,
 });
 
 const InputBox = styled("textarea", {
