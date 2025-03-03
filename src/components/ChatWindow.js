@@ -8,6 +8,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactPlayer from "react-player";
 import { AudioController } from "../utils/AudioRecorder";
 import MicIcon from "@mui/icons-material/Mic";
+import SendIcon from "@mui/icons-material/Send";
 
 const after120Seconds = 120 * 1000;
 function ChatWindow({
@@ -26,6 +27,7 @@ function ChatWindow({
   const [responseState, setResponseState] = useState({});
   const deviceWidth = window.innerWidth;
   const textRef = useRef(null);
+  const [compUpdates, setCompUpdates] = useState(false);
   const [micAcc, setMicAcc] = useState(false);
   // const [, setRerender] = useState(false);
   // const timeinterval = useRef(null);
@@ -310,6 +312,7 @@ function ChatWindow({
           <InputBox
             disabled={disconnected}
             onKeyUp={(e) => {
+              setCompUpdates(!compUpdates);
               if (e.ctrlKey && e.key === "Enter") {
                 textRef.current.value += "\n";
               } else if (e.key === "Enter") send();
@@ -318,6 +321,26 @@ function ChatWindow({
             type="text"
             placeholder="Type a message..."
           />
+
+          {textRef?.current?.value ? (
+            <SendIconComp disabled={disconnected} onClick={send} />
+          ) : (
+            <>
+              <label htmlFor="myfile">
+                {/* for attribute work fine with label only */}
+                <AttachFileIconComp />
+              </label>
+              <input
+                type="file"
+                style={{ display: "none" }}
+                name="myfile"
+                id="myfile"
+                onChange={onfileSelect}
+                multiple={true}
+              />
+            </>
+          )}
+
           <MicIconComp
             onPointerUp={() => {
               micHold(() => mediaRecorder.current.stop());
@@ -327,22 +350,6 @@ function ChatWindow({
             }}
             fontSize="16px"
           />
-
-          <label htmlFor="myfile">
-            {/* for attribute work fine with label only */}
-            <AttachFileIcon style={{ color: "white" }} />
-          </label>
-          <input
-            type="file"
-            style={{ display: "none" }}
-            name="myfile"
-            id="myfile"
-            onChange={onfileSelect}
-            multiple={true}
-          />
-          <button disabled={disconnected} onClick={send}>
-            Send
-          </button>
           {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
@@ -362,19 +369,42 @@ function ChatWindow({
 }
 
 export default ChatWindow;
+
+const AttachFileIconComp = styled(AttachFileIcon, {
+  marginRight: "5px",
+  position: "absolute",
+  right: "30px",
+  bottom: "21px",
+  "@bp3": {
+    right: "46px",
+    cursor: "pointer",
+  },
+});
+const SendIconComp = styled(SendIcon, {
+  marginRight: "5px",
+  // color: "white",
+  fontSize: "26px",
+  position: "absolute",
+  right: "30px",
+
+  "@bp3": {
+    right: "46px",
+    cursor: "pointer",
+  },
+});
 const opacityTransition = keyframes({
   "0%": { opacity: 0.2 },
   "50%": { opacity: 0.8 },
   "100%": { opacity: 0.2 },
 });
 const MicIconComp = styled(MicIcon, {
-  position: "absolute",
-  right: 114,
   cursor: "pointer",
+  color: "white",
+  fontSize: 26,
 
   "&:active": {
-    color: "Blue",
-    scale: "1.7",
+    color: "#92d6ec",
+    scale: "2",
     animation: `${opacityTransition} 2s infinite`,
   },
 
@@ -389,6 +419,8 @@ const InputBox = styled("textarea", {
   outline: "none",
   border: "none",
   resize: "none",
+  marginRight: "6px",
+  paddingRight: 34,
 });
 
 const RedCircle = styled("span", {
