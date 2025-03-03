@@ -310,11 +310,11 @@ function ChatWindow({
             placeholder="Type a message..."
           />
           <MicIconComp
-            onMouseDown={() => {
-              if (mediaRecorder.current) mediaRecorder.current.start();
-            }}
-            onMouseUp={() => {
+            onPointerUp={() => {
               if (mediaRecorder.current) mediaRecorder.current.stop();
+            }}
+            onPointerDown={() => {
+              if (mediaRecorder.current) mediaRecorder.current.start();
             }}
             fontSize="16px"
           />

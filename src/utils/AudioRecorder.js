@@ -10,7 +10,11 @@ export const AudioController = async () => {
   //     return handleSuccess();
   //   }
   //   console.log("prem");
-  return await navigator.mediaDevices
-    .getUserMedia({ audio: true, video: false })
-    .then(handleSuccess);
+  try {
+    return await navigator.mediaDevices
+      .getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
+  } catch (e) {
+    console.log(e);
+  }
 };
