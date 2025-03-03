@@ -123,6 +123,15 @@ function ChatWindow({
     a.click();
   };
 
+  const micHold = (funcToExec) => {
+    if (mediaRecorder.current) {
+      funcToExec();
+    }
+    try {
+      navigator.vibrate(100);
+    } catch (e) {}
+  };
+
   return (
     <ChatWindowDiv>
       <ChatWindowHeader style={{ position: "relative" }}>
@@ -311,10 +320,10 @@ function ChatWindow({
           />
           <MicIconComp
             onPointerUp={() => {
-              if (mediaRecorder.current) mediaRecorder.current.stop();
+              micHold(() => mediaRecorder.current.stop());
             }}
             onPointerDown={() => {
-              if (mediaRecorder.current) mediaRecorder.current.start();
+              micHold(() => mediaRecorder.current.start());
             }}
             fontSize="16px"
           />
