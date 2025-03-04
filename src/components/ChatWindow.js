@@ -29,9 +29,21 @@ function ChatWindow({
   const textRef = useRef(null);
   const [compUpdates, setCompUpdates] = useState(false);
   const [micAcc, setMicAcc] = useState(false);
+  const ChatWindowMessagesRef = useRef(null);
   // const [, setRerender] = useState(false);
   // const timeinterval = useRef(null);
   // const timeOutinterval = useRef(null);
+  const scrollToBottom = () => {
+    if (!ChatWindowMessagesRef.current) return;
+    ChatWindowMessagesRef.current.scrollTo(
+      0,
+      ChatWindowMessagesRef.current.scrollHeight
+    );
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [allMessages]);
+  
   useEffect(() => {
     if (textRef.current && !showSideBar) {
       textRef.current.focus();
@@ -47,7 +59,7 @@ function ChatWindow({
   useEffect(() => {
     const func = (e) => {
       sendFile({
-        file: [new File([e.data], "", { type: "audio/webm" })],
+        file: [new File([e.data], "recording", { type: "audio/webm" })],
         id: chat.id,
         senderId,
       });
@@ -153,7 +165,7 @@ function ChatWindow({
           </MobileVisibility>
         )}
       </ChatWindowHeader>
-      <ChatWindowMessages>
+      <ChatWindowMessages ref={ChatWindowMessagesRef}>
         {allMessages.map((each, index) => {
           if (!each.message) return;
           return (
