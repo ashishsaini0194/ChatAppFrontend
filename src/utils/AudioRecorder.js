@@ -1,4 +1,4 @@
-export const AudioController = async () => {
+export const AudioController = async (setError) => {
   const handleSuccess = (res) => {
     const options = { mimeType: "audio/webm" };
     const device = new MediaRecorder(res, options);
@@ -15,6 +15,8 @@ export const AudioController = async () => {
       .getUserMedia({ audio: true, video: false })
       .then(handleSuccess);
   } catch (e) {
-    console.log(e);
+    if (String(e).includes("Permission denied")) {
+      setError("Mic Permission Denied");
+    } else setError(String(e));
   }
 };

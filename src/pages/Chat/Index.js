@@ -189,11 +189,13 @@ function Chat() {
             messageId
           );
           const count = newObj[receiverId].length;
-          showNotification({
-            message: `${Object.values(newObj[receiverId] || {}).length} ${
-              count > 1 ? "new messages" : "new message"
-            }`,
-          }); // if chat is not selected then show push notification
+          if (type != "file" || parseMessage?.final) {
+            showNotification({
+              message: `${Object.values(newObj[receiverId] || {}).length} ${
+                count > 1 ? "new messages" : "new message"
+              }`,
+            }); // if chat is not selected then show push notification
+          }
           setNewMessages(newObj);
 
           pullNewMessages();

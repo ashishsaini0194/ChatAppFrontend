@@ -8,6 +8,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ReactPlayer from "react-player";
 import { AudioController } from "../utils/AudioRecorder";
 import MicIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
 import SendIcon from "@mui/icons-material/Send";
 
 const after120Seconds = 120 * 1000;
@@ -56,21 +57,33 @@ function ChatWindow({
     }
   }, [chat]);
   let mediaRecorder = useRef(document.mediaRecorder);
-  useEffect(() => {
-    const func = (e) => {
-      sendFile({
-        file: [new File([e.data], "recording", { type: "audio/webm" })],
-        id: chat.id,
-        senderId,
+
+  const func = (e) => {
+    if (!e.data.size) return;
+    sendFile({
+      file: [new File([e.data], "recording", { type: "audio/webm" })],
+      id: chat.id,
+      senderId,
+    });
+  };
+  const getMicPermission = async () => {
+    document.mediaRecorder = await AudioController((message) => {
+      setResponseState({
+        type: validTypes.error,
+        message: message,
+        setState: setResponseState,
       });
-    };
-    (async () => {
-      document.mediaRecorder = await AudioController();
-      mediaRecorder.current = document.mediaRecorder;
-      if (!chat || !senderId || !mediaRecorder.current) return;
-      mediaRecorder.current.addEventListener("dataavailable", func);
-      setMicAcc(true);
-    })();
+    });
+    // console.log("document.mediaRecorder", document.mediaRecorder);
+    if (!document.mediaRecorder) return;
+    mediaRecorder.current = document.mediaRecorder;
+    if (!chat || !senderId || !mediaRecorder.current) return;
+    mediaRecorder.current.addEventListener("dataavailable", func);
+    setMicAcc(true);
+  };
+
+  useEffect(() => {
+    getMicPermission();
     return () => {
       if (mediaRecorder.current)
         mediaRecorder.current.removeEventListener("dataavailable", func);
@@ -102,7 +115,7 @@ function ChatWindow({
   // }, [latestEpocTime]);
 
   const send = useCallback(() => {
-    const message = textRef.current.value;
+    const message = (textRef.current.value || "").trim();
     if (!message) {
       setResponseState({
         type: validTypes.error,
@@ -138,8 +151,14 @@ function ChatWindow({
   };
 
   const micHold = (funcToExec) => {
+    if (!document.mediaRecorder) getMicPermission();
     if (mediaRecorder.current) {
-      funcToExec();
+      try {
+        funcToExec();
+      } catch (e) {
+        setMicAcc(false);
+        getMicPermission();
+      }
     }
     try {
       navigator.vibrate(100);
@@ -353,17 +372,30 @@ function ChatWindow({
             </>
           )}
 
-          <MicDiv>
-            <MicIconComp
+          {micAcc ? (
+            <MicDiv
               onPointerUp={() => {
                 micHold(() => mediaRecorder.current.stop());
               }}
               onPointerDown={() => {
                 micHold(() => mediaRecorder.current.start());
               }}
-              fontSize="16px"
-            />
-          </MicDiv>
+            >
+              <MicIconComp fontSize="16px" />
+            </MicDiv>
+          ) : (
+            <MicDiv
+              onPointerUp={() => {
+                micHold(() => mediaRecorder.current.stop());
+              }}
+              onPointerDown={() => {
+                micHold(() => mediaRecorder.current.start());
+              }}
+              style={{ backgroundColor: "gray" }}
+            >
+              <MicOffIconComp fontSize="16px" />
+            </MicDiv>
+          )}
           {/* <button>📎</button>  */}
         </ChatWindowInput>
       )}
@@ -421,6 +453,7 @@ const MicDiv = styled("div", {
   alignItems: "center",
   padding: 3,
   marginRight: 5,
+  cursor: "pointer",
   "&:active": {
     backgroundColor: "#92d6ec",
     scale: "1.5",
@@ -432,6 +465,11 @@ const MicDiv = styled("div", {
   },
 });
 const MicIconComp = styled(MicIcon, {
+  cursor: "pointer",
+  color: "black",
+  fontSize: 26,
+});
+const MicOffIconComp = styled(MicOffIcon, {
   cursor: "pointer",
   color: "black",
   fontSize: 26,
