@@ -76,6 +76,12 @@ function Chat() {
         socket = document.socket;
       } else document.socket = socket;
       setDocumentSocket(!documentSocket);
+      setTimeout(() => {
+        setAllGuestUsers({
+          ...allGuestUsers,
+          botAi: { id: "botAi", name: "AI BOT" },
+        });
+      }, 500);
       // socket.on("connect", () => {
       //   // console.log("socketId ", socket.id);
       // });

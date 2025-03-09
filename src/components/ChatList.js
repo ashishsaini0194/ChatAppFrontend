@@ -66,12 +66,26 @@ function ChatList({
             }}
             style={disconnectedGuestUsers[chat.id] ? { opacity: 0.5 } : {}}
           >
-            {isGuestUser && (
-              <ChatListItemAvatar
-                style={{ backgroundColor: pickRandomColour(chat.name[0]) }}
-              >
-                {chat.name[0]}
-              </ChatListItemAvatar>
+            {/* {console.log(chat)} */}
+            {chat.id === "botAi" ? (
+              <>
+                {" "}
+                <ChatListItemAvatar
+                  style={{
+                    backgroundImage: `url("Images/aiBotImage.jpg")`,
+                    backgroundSize: "contain",
+                    scale: "1.1",
+                  }}
+                />
+              </>
+            ) : (
+              isGuestUser && (
+                <ChatListItemAvatar
+                  style={{ backgroundColor: pickRandomColour(chat.name[0]) }}
+                >
+                  {chat.name[0]}
+                </ChatListItemAvatar>
+              )
             )}
             <ChatListItemDetails>
               <h4>{chat.name}</h4>
