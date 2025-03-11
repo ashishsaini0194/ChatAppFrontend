@@ -246,7 +246,11 @@ function Chat() {
 
     document.socket.emit(
       "singleUserMessage",
-      { ...data, message: messageData, messageId },
+      {
+        ...data,
+        message: data.id == "botAi" ? `bot:${messageData}` : messageData, // sending message to chat gpt if message done to botAi
+        messageId,
+      },
       ({ status }) => {
         if (status) {
           setAllMessages((prevState) => {

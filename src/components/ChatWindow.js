@@ -124,7 +124,7 @@ function ChatWindow({
       });
       return;
     }
-    if (chat.id == "botAi") message = `bot:${message}`; // sending message to chat gpt if message done to botAi
+    
     const data = { message, id: chat.id, senderId };
     sendMessage(data, "text");
     textRef.current.value = "";
