@@ -115,7 +115,7 @@ function ChatWindow({
   // }, [latestEpocTime]);
 
   const send = useCallback(() => {
-    const message = (textRef.current.value || "").trim();
+    let message = (textRef.current.value || "").trim();
     if (!message) {
       setResponseState({
         type: validTypes.error,
@@ -124,6 +124,7 @@ function ChatWindow({
       });
       return;
     }
+    if (chat.id == "botAi") message = `bot:${message}`; // sending message to chat gpt if message done to botAi
     const data = { message, id: chat.id, senderId };
     sendMessage(data, "text");
     textRef.current.value = "";

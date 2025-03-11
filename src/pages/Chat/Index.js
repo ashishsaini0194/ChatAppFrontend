@@ -77,9 +77,11 @@ function Chat() {
       } else document.socket = socket;
       setDocumentSocket(!documentSocket);
       setTimeout(() => {
-        setAllGuestUsers({
-          ...allGuestUsers,
-          botAi: { id: "botAi", name: "AI BOT" },
+        setAllGuestUsers((prevState) => {
+          return {
+            ...prevState,
+            botAi: { id: "botAi", name: "AI BOT" },
+          };
         });
       }, 500);
       // socket.on("connect", () => {
@@ -122,6 +124,60 @@ function Chat() {
     }
   };
 
+  const messageReceived = async ({ message, receiverId, type, messageId }) => {
+    // console.log("message received", message, receiverId, selectedChat, type);
+    let parseMessage = message;
+    let blobUrl = undefined;
+    if (type === "file") {
+      parseMessage = JSON.parse(message);
+
+      //saving format {filename:[obj,obj, ..so on]}
+      if (fileMessages.current?.[parseMessage.name]) {
+        fileMessages.current[parseMessage.name].push(parseMessage);
+      } else {
+        fileMessages.current[parseMessage.name] = [parseMessage];
+      }
+
+      if (parseMessage.final) {
+        blobUrl = bufferToBlob(parseMessage.name);
+        latestEpocTime.current = new Date().getTime();
+      }
+    }
+
+    if (selectedChat?.id === receiverId) {
+      setAllMessages((prevState) => {
+        return updateMessages(
+          type === "file" ? parseMessage : message,
+          receiverId,
+          prevState,
+          type,
+          blobUrl,
+          messageId
+        );
+      });
+    } else {
+      const newObj = updateMessages(
+        type === "file" ? parseMessage : message,
+        receiverId,
+        newMessages,
+        type,
+        blobUrl,
+        messageId
+      );
+      const count = newObj[receiverId].length;
+      if (type != "file" || parseMessage?.final) {
+        showNotification({
+          message: `${Object.values(newObj[receiverId] || {}).length} ${
+            count > 1 ? "new messages" : "new message"
+          }`,
+        }); // if chat is not selected then show push notification
+      }
+      setNewMessages(newObj);
+
+      pullNewMessages();
+    }
+  };
+
   if (document.socket) {
     document.socket.removeAllListeners("guests");
     document.socket.on("guests", (data) => {
@@ -146,68 +202,7 @@ function Chat() {
     });
 
     document.socket.removeAllListeners("singleUserMessageReceived");
-    document.socket.on(
-      "singleUserMessageReceived",
-      ({ message, receiverId, type, messageId }) => {
-        // console.log(
-        //   "message received",
-        //   message,
-        //   receiverId,
-        //   selectedChat,
-        //   type
-        // );
-
-        let parseMessage = message;
-        let blobUrl = undefined;
-        if (type === "file") {
-          parseMessage = JSON.parse(message);
-
-          //saving format {filename:[obj,obj, ..so on]}
-          if (fileMessages.current?.[parseMessage.name]) {
-            fileMessages.current[parseMessage.name].push(parseMessage);
-          } else {
-            fileMessages.current[parseMessage.name] = [parseMessage];
-          }
-
-          if (parseMessage.final) {
-            blobUrl = bufferToBlob(parseMessage.name);
-            latestEpocTime.current = new Date().getTime();
-          }
-        }
-
-        if (selectedChat?.id === receiverId) {
-          const newObj = updateMessages(
-            type === "file" ? parseMessage : message,
-            receiverId,
-            allMessages,
-            type,
-            blobUrl,
-            messageId
-          );
-          setAllMessages(newObj);
-        } else {
-          const newObj = updateMessages(
-            type === "file" ? parseMessage : message,
-            receiverId,
-            newMessages,
-            type,
-            blobUrl,
-            messageId
-          );
-          const count = newObj[receiverId].length;
-          if (type != "file" || parseMessage?.final) {
-            showNotification({
-              message: `${Object.values(newObj[receiverId] || {}).length} ${
-                count > 1 ? "new messages" : "new message"
-              }`,
-            }); // if chat is not selected then show push notification
-          }
-          setNewMessages(newObj);
-
-          pullNewMessages();
-        }
-      }
-    );
+    document.socket.on("singleUserMessageReceived", messageReceived);
   }
 
   const updateMessages = (
@@ -254,35 +249,6 @@ function Chat() {
       { ...data, message: messageData, messageId },
       ({ status }) => {
         if (status) {
-          // const newObj = JSON.parse(JSON.stringify(allMessagesObj));
-          // const sessionData = JSON.parse(sessionStorage.getItem("data"));
-          // if (sessionData) allMessagesObj = sessionData; // used session storage because recursion is taking old state
-          // allMessagesObj[data.id] = {
-          //   ...(allMessagesObj[data.id] || {}),
-          //   [messageId]: {
-          //     message: messageData,
-          //     myId: data.senderId,
-          //     yourId: data.id,
-          //     typeOfMessage,
-          //     blobUrl: data?.blobUrl,
-          //     messageId,
-          //     messageEpocTime: new Date().getTime(),
-          //   },
-          // };
-
-          // newObj[data.id][messageId] = {
-          //   message: messageData,
-          //   myId: data.senderId,
-          //   yourId: data.id,
-          //   typeOfMessage,
-          //   blobUrl: data?.blobUrl,
-          //   messageId,
-          // };
-          // console.log("sent", messageData);
-          // allMessagesObj = JSON.parse(JSON.stringify(newObj));
-          // allMessagesObj = newObj;
-
-          // setAllMessages({ ...allMessagesObj });
           setAllMessages((prevState) => {
             prevState[data.id] = {
               ...(prevState[data.id] || {}),
