@@ -124,8 +124,21 @@ function Chat() {
     }
   };
 
-  const messageReceived = async ({ message, receiverId, type, messageId }) => {
-    // console.log("message received", message, receiverId, selectedChat, type);
+  const messageReceived = async ({
+    message,
+    receiverId,
+    type,
+    messageId,
+    streamDetails,
+  }) => {
+    // console.log(
+    //   "message received",
+    //   message,
+    //   receiverId,
+    //   selectedChat,
+    //   type,
+    //   streamDetails
+    // );
     let parseMessage = message;
     let blobUrl = undefined;
     if (type === "file") {
@@ -152,7 +165,8 @@ function Chat() {
           prevState,
           type,
           blobUrl,
-          messageId
+          messageId,
+          streamDetails
         );
       });
     } else {
@@ -162,7 +176,8 @@ function Chat() {
         newMessages,
         type,
         blobUrl,
-        messageId
+        messageId,
+        streamDetails
       );
       const count = newObj[receiverId].length;
       if (type != "file" || parseMessage?.final) {
@@ -211,9 +226,30 @@ function Chat() {
     source,
     typeOfMessage,
     blobUrl,
-    messageId
+    messageId,
+    streamDetails
   ) => {
+    if (!message) {
+      return source;
+    }
+    // console.log(" streamDetails", streamDetails, message);
     const newObj = { ...source };
+    if (streamDetails) {
+      if (!newObj[receiverId][messageId]) {
+        newObj[receiverId][messageId] = {
+          message: message,
+          yourId: receiverId,
+          typeOfMessage,
+          blobUrl,
+          messageEpocTime: new Date().getTime(),
+        };
+      } else
+        newObj[receiverId][messageId].message = `${
+          newObj[receiverId][messageId].message || ""
+        }${message}`;
+      // console.log({ newObj });
+      return { ...newObj };
+    }
     newObj[receiverId] = {
       ...(source[receiverId] || {}),
       [messageId]: {
@@ -224,6 +260,7 @@ function Chat() {
         messageEpocTime: new Date().getTime(),
       },
     };
+    // console.log({ newObj });
     return newObj;
   };
 
