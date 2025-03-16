@@ -243,10 +243,7 @@ function Chat() {
           blobUrl,
           messageEpocTime: new Date().getTime(),
         };
-      } else
-        newObj[receiverId][messageId].message = `${
-          newObj[receiverId][messageId].message || ""
-        }${message}`;
+      } else newObj[receiverId][messageId].message += message;
       // console.log({ newObj });
       return { ...newObj };
     }
